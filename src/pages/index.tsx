@@ -84,7 +84,8 @@ const Home: NextPage = () => {
 	const [imagePreviewSrc, setImagePreviewSrc] = useState('');
 	const [bgColor, setBgColor] = useState('#FFF');
 	const [borderColor, setBorderColor] = useState('#000');
-	const [pixelDensity, setPixelDensity] = useState(220);
+	const [pixelDensityCopy, setPixelDensityCopy] = useState(220);
+	const [pixelDensityDL, setPixelDensityDL] = useState(220);
 	const previewRef = useRef<HTMLDivElement>(null);
 	const [theme, setTheme] = useState('light');
 
@@ -173,7 +174,6 @@ const Home: NextPage = () => {
 									style={{
 										transform: `scale(${scale}) rotate(${rotate}deg)`,
 									}}
-                  
 									onLoad={onImageLoad}
 								/>
 							</ReactCrop>
@@ -218,7 +218,9 @@ const Home: NextPage = () => {
 				)}
 				<div className="card bg-base-200 mt-8 p-4 px-8">
 					<div className="flex items-center justify-between w-[300px] mb-3">
-						<span>Scale: </span>
+						<label className="uppercase font-bold text-sm">
+							Scale:{' '}
+						</label>
 						<div className="input-group w-auto items-center">
 							<button
 								className="btn btn-square btn-sm"
@@ -229,7 +231,7 @@ const Home: NextPage = () => {
 							<input
 								// type="text"
 								placeholder="0"
-								className="input input-bordered w-20 input-sm"
+								className="input input-bordered border-2 w-20 input-sm"
 								type="number"
 								step="0.1"
 								value={Math.round(scale * 10) / 10}
@@ -247,7 +249,9 @@ const Home: NextPage = () => {
 						</div>
 					</div>
 					<div className="flex items-center justify-between w-[300px] mb-3">
-						<label>Rotate: </label>
+						<label className="uppercase font-bold text-sm">
+							Rotate:{' '}
+						</label>
 
 						<div className="input-group w-auto items-center">
 							<button
@@ -259,7 +263,7 @@ const Home: NextPage = () => {
 							<input
 								// type="text"
 								placeholder="0"
-								className="input input-bordered w-20 input-sm"
+								className="input input-bordered border-2 w-20 input-sm"
 								type="number"
 								// step="0.1"
 								value={rotate}
@@ -277,7 +281,9 @@ const Home: NextPage = () => {
 						</div>
 					</div>
 					<label className="flex items-center justify-between w-[300px] mb-3 cursor-pointer">
-						<span className="">Toggle Aspect Ratio</span>
+						<span className="uppercase font-bold text-sm">
+							Toggle Aspect Ratio:
+						</span>
 						<input
 							type="checkbox"
 							className="toggle"
@@ -312,45 +318,55 @@ const Home: NextPage = () => {
 	useEffect(() => {
 		const savedTheme = localStorage.getItem('theme') || 'light';
 		setTheme(savedTheme);
+		setPixelDensityCopy(96);
+		setPixelDensityDL(220);
 	}, []);
 
 	return (
 		<div className="bg-base-100 h-screen" data-theme={theme}>
-      <ToastContainer hideProgressBar theme='dark'/>
-			<Head> 
+			<ToastContainer hideProgressBar theme="dark" />
+			<Head>
 				<title>ID Picture Print Layout Generator Tool</title>
 			</Head>
-  
+
 			<header className="flex bg-primary h-[90px] px-8 items-center justify-between">
 				<h1 className="text-primary-content text-2xl font-bold">
 					ID Picture Print Layout Generator Tool
 				</h1>
-				<div className="dropdown dropdown-left ">
-					<label tabIndex={0} className="btn m-1 gap-2">
-						<Icon.Droplet /> theme
-					</label>
-					<ul
-						tabIndex={0}
-						className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 max-h-72 overflow-y-auto"
-					>
-						<div className="text-center py-2"> Choose a theme:</div>
+				<div className='flex items-center gap-2'>
+					<div className="dropdown dropdown-left ">
+						<label tabIndex={0} className="btn btn-accent m-1 gap-2">
+							<Icon.Droplet /> theme
+						</label>
+						<ul
+							tabIndex={0}
+							className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 max-h-72 overflow-y-auto"
+						>
+							<div className="text-center py-2">
+								{' '}
+								Choose a theme:
+							</div>
 
-						<hr />
-						{themeData.map((val, i) => {
-							return (
-								<li
-									key={i}
-									onClick={() => {
-										setTheme(val);
-										localStorage.setItem('theme', val);
-									}}
-								>
-									<a>{val}</a>
-								</li>
-							);
-						})}
-						{/* <li><a>Item 2</a></li> */}
-					</ul>
+							<hr />
+							{themeData.map((val, i) => {
+								return (
+									<li
+										key={i}
+										onClick={() => {
+											setTheme(val);
+											localStorage.setItem('theme', val);
+										}}
+									>
+										<a>{val}</a>
+									</li>
+								);
+							})}
+							{/* <li><a>Item 2</a></li> */}
+						</ul>
+					</div>
+          <div className="tooltip tooltip-left" data-tip="Built with⚡by andrei 🔥. See source code on Github">
+          <a target="_blank" href="https://github.com/andreitrinidad/next-id-picture-layout-generator" className="btn btn-circle" rel="noreferrer"><Icon.GitHub/></a>
+          </div>
 				</div>
 			</header>
 			<section className="flex flex-1 p-8 gap-10 bg-base-100">
@@ -412,7 +428,7 @@ const Home: NextPage = () => {
 								exportAsImage(
 									previewRef.current,
 									'image',
-									pixelDensity
+									pixelDensityDL
 								)
 							}
 						>
@@ -422,11 +438,15 @@ const Home: NextPage = () => {
 						<button
 							className="btn btn-primary gap-2"
 							onClick={() => {
-
-								copyImage(previewRef.current, pixelDensity, () => toast("Copied to Clipboard!", {autoClose: 1500}))
-                
-              }
-							}
+								copyImage(
+									previewRef.current,
+									pixelDensityCopy,
+									() =>
+										toast('Copied to Clipboard!', {
+											autoClose: 1500,
+										})
+								);
+							}}
 						>
 							Copy to Clipboard
 							<Icon.Clipboard />
@@ -434,12 +454,23 @@ const Home: NextPage = () => {
 					</div>
 
 					{/* PREVIEW */}
-					<LayoutPreview
-						imagePreviewSrc={imagePreviewSrc}
-						bgColor={bgColor}
-						borderColor={borderColor}
-						ppi={100}
-					/>
+          <div className='inline-flex'>
+            <div className='flex flex-col'>
+          <div className="divider">4 in</div>
+
+            <LayoutPreview
+              imagePreviewSrc={imagePreviewSrc}
+              bgColor={bgColor}
+              borderColor={borderColor}
+              ppi={100}
+            />
+                   
+            </div>
+            <div className="divider divider-horizontal border-base-content pt-12">5 in</div>
+       
+       
+          </div>
+
 
 					{/* ACTUAL SIZE MOVE IT SOMEWHERE */}
 					<div className="absolute -z-10 top-0 left-0 h-2 w-2 overflow-hidden ">
@@ -448,7 +479,7 @@ const Home: NextPage = () => {
 							imagePreviewSrc={imagePreviewSrc}
 							borderColor={borderColor}
 							bgColor={bgColor}
-							ppi={pixelDensity}
+							ppi={pixelDensityDL}
 						/>
 					</div>
 					<div className="flex gap-2 items-center my-4">
@@ -480,23 +511,19 @@ const Home: NextPage = () => {
 							</div>
 						</a>
 					</div>
-					<div className="flex gap-2 items-center">
-						<label htmlFor="">Pixels per inch:</label>
+					<div className="flex gap-2 items-center mb-2">
+						<label className="uppercase font-bold text-sm">
+							Export PPI:
+						</label>
 						<input
 							type="number"
 							min="96"
 							max="600"
-							className="input input-sm w-24"
-							value={pixelDensity}
+							className="input input-sm w-24 input-bordered border-2"
+							value={pixelDensityDL}
 							onChange={(e) => {
 								let value = Number(e.target.value);
-								// if (Number(e.target.value) < 96) {
-								// 	value = 96;
-								// }
-								// if (Number(e.target.value) > 600) {
-								// 	value = 600;
-								// }
-								setPixelDensity(value);
+								setPixelDensityDL(value);
 							}}
 							onBlur={(e) => {
 								let value = Number(e.target.value);
@@ -506,13 +533,55 @@ const Home: NextPage = () => {
 								if (Number(e.target.value) > 600) {
 									value = 600;
 								}
-								setPixelDensity(value);
+								setPixelDensityDL(value);
 							}}
 						/>
 
 						<div
 							className="tooltip"
-							data-tip="PPI or Pixels Per Inch is the density of pixels in an image. The web uses 96 PPI by default. For programs like Microsoft Word 220 PPI is the default."
+							data-tip="PPI or Pixels Per Inch is the density of pixels in an image. 220 PPI is optimized for downloading and inserting into Microsoft Office programs"
+						>
+							<Icon.HelpCircle />
+						</div>
+					</div>
+					<div className="flex gap-2 items-center">
+						<label
+							htmlFor=""
+							className="uppercase font-bold text-sm"
+						>
+							Clipboard PPI:
+						</label>
+						<input
+							type="number"
+							min="96"
+							max="600"
+							className="input input-sm w-24 input-bordered border-2"
+							value={pixelDensityCopy}
+							onChange={(e) => {
+								let value = Number(e.target.value);
+								// if (Number(e.target.value) < 96) {
+								// 	value = 96;
+								// }
+								// if (Number(e.target.value) > 600) {
+								// 	value = 600;
+								// }
+								setPixelDensityCopy(value);
+							}}
+							onBlur={(e) => {
+								let value = Number(e.target.value);
+								if (Number(e.target.value) < 96) {
+									value = 96;
+								}
+								if (Number(e.target.value) > 600) {
+									value = 600;
+								}
+								setPixelDensityCopy(value);
+							}}
+						/>
+
+						<div
+							className="tooltip"
+							data-tip="PPI or Pixels Per Inch is the density of pixels in an image. 96 PPI is optimized for pasting images into Microsoft Office programs."
 						>
 							<Icon.HelpCircle />
 						</div>

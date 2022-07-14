@@ -14,7 +14,7 @@ export const copyImage = async (element: HTMLDivElement|null, ppi: number = 220,
 	if (element == null) return;
   const canvas = await html2canvas(element);
 	const image = canvas.toDataURL('image/png', 1.0);
-  const image150 = changeDpiDataUrl(image, 96); //hard coded 
+  const image150 = changeDpiDataUrl(image, ppi); //hard coded 
   const blob = await (await fetch(image150)).blob(); 
   navigator.clipboard.write([
     new ClipboardItem({
