@@ -1,41 +1,15 @@
 module.exports = {
-  daisyui: {
-    themes: [
-      {
-        mytheme: {
-          "primary": "#372cbc",
-          "secondary": "#9afdd1",
-          "accent": "#1FB2A6",
-          "neutral": "#000000",
-          "base-100": "#2A303C",
-          "info": "#3ABFF8",
-          "success": "#36D399",
-          "warning": "#FBBD23",
-          "error": "#F87272",
-        },
-      },
-    ],
-  },
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+  ],
   plugins: [
     require('daisyui'),
   ],
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-  ],
   theme: {
-    colors: {
-      "primary": "#372cbc",
-      "secondary": "#9afdd1",
-      "accent": "#1FB2A6",
-      "neutral": "#000000",
-      "base-100": "#2A303C",
-      "info": "#3ABFF8",
-      "success": "#36D399",
-      "warning": "#FBBD23",
-      "error": "#F87272",
-    },
     extend: {},
   },
-  plugins: [],
+  daisyui: {
+    themes: ["light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"],
+  },
 }
