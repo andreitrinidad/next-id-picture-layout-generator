@@ -17,7 +17,8 @@
     "react-colorful": "^5.5.1",
     "react-dom": "18.2.0",
     "react-feather": "^2.0.10",
-    "react-image-crop": "^10.0.4"
+    "react-image-crop": "^10.0.4",
+    "react-toastify": "^9.0.5"
   },
   "devDependencies": {
     "@types/node": "18.0.3",

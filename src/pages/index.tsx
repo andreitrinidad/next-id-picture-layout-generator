@@ -17,6 +17,8 @@ import Image from 'next/image';
 import LayoutPreview from '../components/LayoutPreview';
 import exportAsImage, { copyImage } from '../utils/exportAsImage';
 import Head from 'next/head';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function centerAspectCrop(
 	mediaWidth: number,
@@ -38,7 +40,37 @@ function centerAspectCrop(
 	);
 }
 
-const themeData = ["light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"];
+const themeData = [
+	'light',
+	'dark',
+	'cupcake',
+	'bumblebee',
+	'emerald',
+	'corporate',
+	'synthwave',
+	'retro',
+	'cyberpunk',
+	'valentine',
+	'halloween',
+	'garden',
+	'forest',
+	'aqua',
+	'lofi',
+	'pastel',
+	'fantasy',
+	'wireframe',
+	'black',
+	'luxury',
+	'dracula',
+	'cmyk',
+	'autumn',
+	'business',
+	'acid',
+	'lemonade',
+	'night',
+	'coffee',
+	'winter',
+];
 
 const Home: NextPage = () => {
 	const [imgSrc, setImgSrc] = useState('');
@@ -54,7 +86,7 @@ const Home: NextPage = () => {
 	const [borderColor, setBorderColor] = useState('#000');
 	const [pixelDensity, setPixelDensity] = useState(220);
 	const previewRef = useRef<HTMLDivElement>(null);
-  const [theme, setTheme] = useState('light')
+	const [theme, setTheme] = useState('light');
 
 	function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 		if (e.target.files && e.target.files.length > 0) {
@@ -124,7 +156,7 @@ const Home: NextPage = () => {
 				{/* Image and Rotate slider */}
 				{Boolean(imgSrc) && (
 					<div className="flex flex-col items-center">
-						<div className="border-accent border-2">
+						<div className="border-accent border-2 bg-checkered">
 							<ReactCrop
 								crop={crop}
 								onChange={(_, percentCrop) =>
@@ -141,6 +173,7 @@ const Home: NextPage = () => {
 									style={{
 										transform: `scale(${scale}) rotate(${rotate}deg)`,
 									}}
+                  
 									onLoad={onImageLoad}
 								/>
 							</ReactCrop>
@@ -276,55 +309,72 @@ const Home: NextPage = () => {
 		);
 	};
 
-  useEffect(()=>{
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    setTheme(savedTheme);
-  }, [])
+	useEffect(() => {
+		const savedTheme = localStorage.getItem('theme') || 'light';
+		setTheme(savedTheme);
+	}, []);
 
 	return (
 		<div className="bg-base-100 h-screen" data-theme={theme}>
-      <Head>
-      <title>ID Picture Print Layout Generator Tool</title>
-      </Head>
-			<header className="flex bg-primary  h-[90px] px-8 items-center justify-between">
+      <ToastContainer hideProgressBar theme='dark'/>
+			<Head> 
+				<title>ID Picture Print Layout Generator Tool</title>
+			</Head>
+  
+			<header className="flex bg-primary h-[90px] px-8 items-center justify-between">
 				<h1 className="text-primary-content text-2xl font-bold">
 					ID Picture Print Layout Generator Tool
 				</h1>
-        <div className="dropdown dropdown-left ">
-  <label tabIndex={0} className="btn m-1 gap-2"><Icon.Droplet/> theme</label>
-  <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 max-h-72 overflow-y-auto">
-    <div className="text-center py-2">    Choose a theme:</div>
+				<div className="dropdown dropdown-left ">
+					<label tabIndex={0} className="btn m-1 gap-2">
+						<Icon.Droplet /> theme
+					</label>
+					<ul
+						tabIndex={0}
+						className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 max-h-72 overflow-y-auto"
+					>
+						<div className="text-center py-2"> Choose a theme:</div>
 
-    <hr/>
-    {
-      themeData.map((val, i) => {
-        return (
-          <li key={i} onClick={() => {
-            setTheme(val);
-            localStorage.setItem('theme', val);
-          }}><a>{val}</a></li>
-        )
-      })
-    }
-    {/* <li><a>Item 2</a></li> */}
-  </ul>
-</div>
+						<hr />
+						{themeData.map((val, i) => {
+							return (
+								<li
+									key={i}
+									onClick={() => {
+										setTheme(val);
+										localStorage.setItem('theme', val);
+									}}
+								>
+									<a>{val}</a>
+								</li>
+							);
+						})}
+						{/* <li><a>Item 2</a></li> */}
+					</ul>
+				</div>
 			</header>
 			<section className="flex flex-1 p-8 gap-10 bg-base-100">
 				<div className="flex-1 max-w-xl">
 					<h2 className="text-lg font-semibold mb-4">
-						<span className='text-secondary font-bold'>01</span> Choose your image
+						<span className="text-secondary font-bold">01</span>{' '}
+						Choose your image
 					</h2>
 					{/* Controls */}
 
-					{imgSrc ? (
-						<button className="btn btn-primary btn-error btn-outline w-full mb-4 gap-2">
+					{imgSrc !== '' ? (
+						<button
+							className="btn btn-primary btn-error btn-outline w-full mb-4 gap-2"
+							onClick={() => {
+								setImgSrc('');
+								setImagePreviewSrc('');
+							}}
+						>
 							<Icon.Trash />
 							change image
 						</button>
 					) : (
 						<div className="upload-control mb-4">
-							<label className="flex justify-center w-full h-32 px-4 transition bg-base-200 border-2 border-accent border-dashed rounded-md appearance-none cursor-pointer hover:border-accent-focus focus:outline-none">
+							<label className="relative flex justify-center w-full h-32 px-4 transition bg-base-200 border-2 border-accent border-dashed rounded-md appearance-none cursor-pointer hover:border-accent-focus hover:border-4 focus:outline-none">
 								<span className="flex items-center space-x-2">
 									<Icon.Upload />
 									<span className="font-medium">
@@ -342,7 +392,7 @@ const Home: NextPage = () => {
 									accept="image/*"
 									onChange={onSelectFile}
 									name="upload-file"
-									className="hidden"
+									className="absolute inset-0 border-2 opacity-0 cursor-pointer"
 								/>
 							</label>
 						</div>
@@ -352,7 +402,8 @@ const Home: NextPage = () => {
 				</div>
 				<div className="flex-1">
 					<h2 className="text-lg font-semibold mb-4">
-            <span className='text-secondary font-bold'>02</span> Preview and Save
+						<span className="text-secondary font-bold">02</span>{' '}
+						Preview and Save
 					</h2>
 					<div className="flex gap-4 mb-4">
 						<button
@@ -370,12 +421,11 @@ const Home: NextPage = () => {
 						</button>
 						<button
 							className="btn btn-primary gap-2"
-							onClick={() =>
-								copyImage(
-									previewRef.current,
-									'image',
-									pixelDensity
-								)
+							onClick={() => {
+
+								copyImage(previewRef.current, pixelDensity, () => toast("Copied to Clipboard!", {autoClose: 1500}))
+                
+              }
 							}
 						>
 							Copy to Clipboard
@@ -387,7 +437,7 @@ const Home: NextPage = () => {
 					<LayoutPreview
 						imagePreviewSrc={imagePreviewSrc}
 						bgColor={bgColor}
-            borderColor={borderColor}
+						borderColor={borderColor}
 						ppi={100}
 					/>
 
@@ -396,7 +446,7 @@ const Home: NextPage = () => {
 						<LayoutPreview
 							ref={previewRef}
 							imagePreviewSrc={imagePreviewSrc}
-              borderColor={borderColor}
+							borderColor={borderColor}
 							bgColor={bgColor}
 							ppi={pixelDensity}
 						/>
@@ -416,7 +466,7 @@ const Home: NextPage = () => {
 								<p>{bgColor}</p>
 							</div>
 						</a>
-            <a className="btn btn-accent btn-sm group relative no-animation">
+						<a className="btn btn-accent btn-sm group relative no-animation">
 							BORDER COLOR
 							<div className="hidden flex-col gap-3 absolute bottom-full bg-neutral text-neutral-content shadow-xl p-4 rounded-2xl group-hover:flex">
 								<p>Pick Color</p>

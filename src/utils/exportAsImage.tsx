@@ -10,18 +10,18 @@ const exportAsImage = async (element: HTMLDivElement|null, imageFileName: string
 	downloadImage(image150, imageFileName);
 };
 
-export const copyImage = async (element: HTMLDivElement|null, imageFileName: string, ppi: number = 220) => {
+export const copyImage = async (element: HTMLDivElement|null, ppi: number = 220, callback: Function) => {
 	if (element == null) return;
   const canvas = await html2canvas(element);
 	const image = canvas.toDataURL('image/png', 1.0);
-  const image150 = changeDpiDataUrl(image, ppi);
-  // console.log(image150);
+  const image150 = changeDpiDataUrl(image, 96); //hard coded 
   const blob = await (await fetch(image150)).blob(); 
   navigator.clipboard.write([
     new ClipboardItem({
       [blob.type]: blob
     })
   ]);
+  callback();
 };
 
 const downloadImage = (blob: string, fileName: string) => {
