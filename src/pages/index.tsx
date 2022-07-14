@@ -319,7 +319,7 @@ const Home: NextPage = () => {
 		const savedTheme = localStorage.getItem('theme') || 'light';
 		setTheme(savedTheme);
 		setPixelDensityCopy(96);
-		setPixelDensityDL(220);
+		setPixelDensityDL(96);
 	}, []);
 
 	return (
