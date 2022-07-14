@@ -16,6 +16,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 import Image from 'next/image';
 import LayoutPreview from '../components/LayoutPreview';
 import exportAsImage, { copyImage } from '../utils/exportAsImage';
+import Head from 'next/head';
 
 function centerAspectCrop(
 	mediaWidth: number,
@@ -281,10 +282,13 @@ const Home: NextPage = () => {
   }, [])
 
 	return (
-		<div className="bg-base-100 border-red-500 border-2 h-screen" data-theme={theme}>
+		<div className="bg-base-100 h-screen" data-theme={theme}>
+      <Head>
+      <title>ID Picture Print Layout Generator Tool</title>
+      </Head>
 			<header className="flex bg-primary  h-[90px] px-8 items-center justify-between">
 				<h1 className="text-primary-content text-2xl font-bold">
-					ID Picture Layout Generator Tool
+					ID Picture Print Layout Generator Tool
 				</h1>
         <div className="dropdown dropdown-left ">
   <label tabIndex={0} className="btn m-1 gap-2"><Icon.Droplet/> theme</label>
