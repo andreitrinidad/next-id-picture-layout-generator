@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import 'react-image-crop/dist/ReactCrop.css';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, DragEvent } from 'react';
 import * as Icon from 'react-feather';
 import ReactCrop, {
 	centerCrop,
@@ -19,6 +19,10 @@ import exportAsImage, { copyImage } from '../utils/exportAsImage';
 import Head from 'next/head';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AppHeader } from '../components/AppHeader';
+import { UploadWidget } from '../components/UploadWidget';
+import classNames from 'classnames';
+import FocusTrap from 'focus-trap-react';
 
 function centerAspectCrop(
 	mediaWidth: number,
@@ -40,38 +44,6 @@ function centerAspectCrop(
 	);
 }
 
-const themeData = [
-	'light',
-	'dark',
-	'cupcake',
-	'bumblebee',
-	'emerald',
-	'corporate',
-	'synthwave',
-	'retro',
-	'cyberpunk',
-	'valentine',
-	'halloween',
-	'garden',
-	'forest',
-	'aqua',
-	'lofi',
-	'pastel',
-	'fantasy',
-	'wireframe',
-	'black',
-	'luxury',
-	'dracula',
-	'cmyk',
-	'autumn',
-	'business',
-	'acid',
-	'lemonade',
-	'night',
-	'coffee',
-	'winter',
-];
-
 const Home: NextPage = () => {
 	const [imgSrc, setImgSrc] = useState('');
 	const previewCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -87,7 +59,9 @@ const Home: NextPage = () => {
 	const [pixelDensityCopy, setPixelDensityCopy] = useState(220);
 	const [pixelDensityDL, setPixelDensityDL] = useState(220);
 	const previewRef = useRef<HTMLDivElement>(null);
+	const replaceBtnRef = useRef<HTMLButtonElement>(null);
 	const [theme, setTheme] = useState('light');
+	const [confirmModal, setConfirmModal] = useState(false);
 
 	function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 		if (e.target.files && e.target.files.length > 0) {
@@ -104,6 +78,37 @@ const Home: NextPage = () => {
 		if (aspect) {
 			const { width, height } = e.currentTarget;
 			setCrop(centerAspectCrop(width, height, aspect));
+		}
+	}
+
+	async function pasteFromClipboard() {
+		try {
+			const permission = await navigator.permissions.query({
+				// @ts-ignore: Unreachable code error
+				name: 'clipboard-read',
+			});
+			if (permission.state === 'denied') {
+				toast.warning(
+					'Woops. Permission denied. Please change clipboard permissions',
+					{ autoClose: 5000 }
+				);
+			}
+			const clipboardContents = await navigator.clipboard.read();
+			for (const item of clipboardContents) {
+				if (!item.types.includes('image/png')) {
+					toast.error('Clipboard content is not an image.');
+					return;
+				}
+				const blob = await item.getType('image/png');
+				setCrop(undefined);
+				const src = URL.createObjectURL(blob);
+				setImgSrc(`${src}`);
+			}
+		} catch (error) {
+			console.log(error);
+			toast.error('Something went wrong.');
+		} finally {
+			setConfirmModal(false);
 		}
 	}
 
@@ -175,6 +180,7 @@ const Home: NextPage = () => {
 										transform: `scale(${scale}) rotate(${rotate}deg)`,
 									}}
 									onLoad={onImageLoad}
+									// crossOrigin="anonymous"
 								/>
 							</ReactCrop>
 						</div>
@@ -315,60 +321,79 @@ const Home: NextPage = () => {
 		);
 	};
 
+	function copyToClipboard() {
+		copyImage(previewRef.current, pixelDensityCopy, () =>
+			toast.success('Copied to Clipboard!')
+		);
+	}
+
+	function downloadResult() {
+		exportAsImage(previewRef.current, 'image', pixelDensityDL, () =>
+			toast.success('Image downloaded!')
+		);
+	}
+
 	useEffect(() => {
-		const savedTheme = localStorage.getItem('theme') || 'light';
+		const savedTheme = localStorage.getItem('theme') || 'lofi';
 		setTheme(savedTheme);
 		setPixelDensityCopy(96);
 		setPixelDensityDL(96);
-	}, []);
+
+		function detectKeys(event: any) {
+			if ((event.ctrlKey || event.metaKey) && event.keyCode == 83) {
+				event.preventDefault();
+				downloadResult();
+			}
+			if ((event.ctrlKey || event.metaKey) && event.keyCode == 67) {
+				event.preventDefault();
+				copyToClipboard();
+			}
+			if ((event.ctrlKey || event.metaKey) && event.keyCode == 86) {
+				if (!!imagePreviewSrc || imagePreviewSrc) {
+					event.preventDefault();
+					setConfirmModal(true);
+					replaceBtnRef.current?.focus();
+					return;
+				}
+				pasteFromClipboard();
+			}
+			if (event.keyCode == 27) {
+				if (confirmModal) {
+					event.preventDefault();
+					setConfirmModal(false);
+				}
+			}
+		}
+
+		window.addEventListener('keydown', detectKeys);
+
+		return () => {
+			window.removeEventListener('keydown', detectKeys);
+		};
+	}, [copyToClipboard, downloadResult, imagePreviewSrc]);
+
+	useEffect(() => {
+		replaceBtnRef.current?.focus();
+	}, [confirmModal]);
+
+	function removeImage() {
+		setImgSrc('');
+		setImagePreviewSrc('');
+	}
 
 	return (
 		<div className="bg-base-100 h-screen" data-theme={theme}>
-			<ToastContainer hideProgressBar theme="dark" />
+			<ToastContainer
+				hideProgressBar
+				theme="dark"
+				autoClose={1500}
+				position="bottom-right"
+			/>
 			<Head>
 				<title>ID Picture Print Layout Generator Tool</title>
 			</Head>
+			<AppHeader setTheme={setTheme} />
 
-			<header className="flex bg-primary h-[90px] px-8 items-center justify-between">
-				<h1 className="text-primary-content text-2xl font-bold">
-					ID Picture Print Layout Generator Tool
-				</h1>
-				<div className='flex items-center gap-2'>
-					<div className="dropdown dropdown-left ">
-						<label tabIndex={0} className="btn btn-accent m-1 gap-2">
-							<Icon.Droplet /> theme
-						</label>
-						<ul
-							tabIndex={0}
-							className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 max-h-72 overflow-y-auto"
-						>
-							<div className="text-center py-2">
-								{' '}
-								Choose a theme:
-							</div>
-
-							<hr />
-							{themeData.map((val, i) => {
-								return (
-									<li
-										key={i}
-										onClick={() => {
-											setTheme(val);
-											localStorage.setItem('theme', val);
-										}}
-									>
-										<a>{val}</a>
-									</li>
-								);
-							})}
-							{/* <li><a>Item 2</a></li> */}
-						</ul>
-					</div>
-          <div className="tooltip tooltip-left" data-tip="Built with⚡by andrei 🔥. See source code on Github">
-          <a target="_blank" href="https://github.com/andreitrinidad/next-id-picture-layout-generator" className="btn btn-circle" rel="noreferrer"><Icon.GitHub/></a>
-          </div>
-				</div>
-			</header>
 			<section className="flex flex-1 p-8 gap-10 bg-base-100">
 				<div className="flex-1 max-w-xl">
 					<h2 className="text-lg font-semibold mb-4">
@@ -380,38 +405,16 @@ const Home: NextPage = () => {
 					{imgSrc !== '' ? (
 						<button
 							className="btn btn-primary btn-error btn-outline w-full mb-4 gap-2"
-							onClick={() => {
-								setImgSrc('');
-								setImagePreviewSrc('');
-							}}
+							onClick={removeImage}
 						>
 							<Icon.Trash />
 							change image
 						</button>
 					) : (
-						<div className="upload-control mb-4">
-							<label className="relative flex justify-center w-full h-32 px-4 transition bg-base-200 border-2 border-accent border-dashed rounded-md appearance-none cursor-pointer hover:border-accent-focus hover:border-4 focus:outline-none">
-								<span className="flex items-center space-x-2">
-									<Icon.Upload />
-									<span className="font-medium">
-										Drop files to Attach, or
-										<a className="ml-4 btn btn-sm">
-											browse
-										</a>
-										{/* <span className="color-base-content underline">
-											browse
-										</span> */}
-									</span>
-								</span>
-								<input
-									type="file"
-									accept="image/*"
-									onChange={onSelectFile}
-									name="upload-file"
-									className="absolute inset-0 border-2 opacity-0 cursor-pointer"
-								/>
-							</label>
-						</div>
+						<UploadWidget
+							onSelectFile={onSelectFile}
+							onPasteClick={pasteFromClipboard}
+						/>
 					)}
 
 					{renderControls()}
@@ -421,58 +424,46 @@ const Home: NextPage = () => {
 						<span className="text-secondary font-bold">02</span>{' '}
 						Preview and Save
 					</h2>
-					<div className="flex gap-4 mb-4">
+					<div className="flex gap-4 mb-4 flex-wrap">
 						<button
 							className="btn btn-primary gap-2"
-							onClick={() =>
-								exportAsImage(
-									previewRef.current,
-									'image',
-									pixelDensityDL
-								)
-							}
+							onClick={downloadResult}
 						>
 							Download .png
 							<Icon.Download />
 						</button>
 						<button
 							className="btn btn-primary gap-2"
-							onClick={() => {
-								copyImage(
-									previewRef.current,
-									pixelDensityCopy,
-									() =>
-										toast('Copied to Clipboard!', {
-											autoClose: 1500,
-										})
-								);
-							}}
+							onClick={copyToClipboard}
 						>
 							Copy to Clipboard
-							<Icon.Clipboard />
+							<Icon.Copy />
 						</button>
+						<div className="w-full text-xs">
+							Use <kbd className="kbd kbd-xs">CTRL</kbd> +{' '}
+							<kbd className="kbd kbd-xs">S</kbd> to download or{' '}
+							<kbd className="kbd kbd-xs">CTRL</kbd> +{' '}
+							<kbd className="kbd kbd-xs">C</kbd> to copy result
+							to clipboard
+						</div>
 					</div>
 
 					{/* PREVIEW */}
-          <div className='inline-flex'>
-            <div className='flex flex-col'>
-          <div className="divider">4 in</div>
-
-            <LayoutPreview
-              imagePreviewSrc={imagePreviewSrc}
-              bgColor={bgColor}
-              borderColor={borderColor}
-              ppi={100}
-            />
-                   
-            </div>
-            <div className="divider divider-horizontal border-base-content pt-12">5 in</div>
-       
-       
-          </div>
-
-
-					{/* ACTUAL SIZE MOVE IT SOMEWHERE */}
+					<div className="inline-flex">
+						<div className="flex flex-col">
+							<div className="divider">4 in</div>
+							<LayoutPreview
+								imagePreviewSrc={imagePreviewSrc}
+								bgColor={bgColor}
+								borderColor={borderColor}
+								ppi={100}
+							/>
+						</div>
+						<div className="divider divider-horizontal border-base-content pt-12">
+							5 in
+						</div>
+					</div>
+					{/* ACTUAL SIZE - HIDDEN */}
 					<div className="absolute -z-10 top-0 left-0 h-2 w-2 overflow-hidden ">
 						<LayoutPreview
 							ref={previewRef}
@@ -539,7 +530,7 @@ const Home: NextPage = () => {
 
 						<div
 							className="tooltip"
-							data-tip="PPI or Pixels Per Inch is the density of pixels in an image. 220 PPI is optimized for downloading and inserting into Microsoft Office programs"
+							data-tip="PPI or Pixels Per Inch is the density of pixels in an image. 96 PPI is optimized for Microsoft Office. Make this 150 PPI and above for use in other programs"
 						>
 							<Icon.HelpCircle />
 						</div>
@@ -559,12 +550,6 @@ const Home: NextPage = () => {
 							value={pixelDensityCopy}
 							onChange={(e) => {
 								let value = Number(e.target.value);
-								// if (Number(e.target.value) < 96) {
-								// 	value = 96;
-								// }
-								// if (Number(e.target.value) > 600) {
-								// 	value = 600;
-								// }
 								setPixelDensityCopy(value);
 							}}
 							onBlur={(e) => {
@@ -588,6 +573,41 @@ const Home: NextPage = () => {
 					</div>
 				</div>
 			</section>
+			{/* modals */}
+			{confirmModal && (
+				<FocusTrap>
+					<div className={classNames('modal modal-open')}>
+						<div className="modal-box">
+							<h3 className="font-bold text-lg">
+								Confirm replace image
+							</h3>
+							<p className="py-4">
+								You pressed <kbd className="kbd">CTRL</kbd> +{' '}
+								<kbd className="kbd">V</kbd>. Are you sure you
+								want to replace current image?
+							</p>
+							<div className="modal-action">
+								<button
+									className="btn btn-link"
+									onClick={() => setConfirmModal(false)}
+								>
+									CANCEL
+								</button>
+								<button
+									ref={replaceBtnRef}
+									className="btn btn-primary"
+									onClick={(e) => {
+										e.preventDefault();
+										pasteFromClipboard();
+									}}
+								>
+									REplace
+								</button>
+							</div>
+						</div>
+					</div>
+				</FocusTrap>
+			)}
 		</div>
 	);
 };
