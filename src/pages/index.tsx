@@ -430,21 +430,19 @@ const Home: NextPage = () => {
 		setImagePreviewSrc('');
 	}
 
-	// function getTotalHeight() {
-	//   const height = Object.values(layouts[activeLayoutIndex].printLayout)
-	//     .map((x:number ) => Object.values(x)[0]?.height)
-	//     .reduce((prev,cur) => prev + cur);
-	//   return height;
-	// }
-	// function getTotalWidth() {
-	//   const width = Object.values(layouts[activeLayoutIndex].printLayout)
-	//     .map((x:number ) => Object.values(x))[1]
-	//     .map(x => x.width)
-	//     .reduce((prev,cur) => prev + cur);
-
-	//     // .reduce((prev,cur) => prev.width + cur.width);
-	//   return JSON.stringify(width);
-	// }
+	function getTotalHeight() {
+	  const height = Object.values(layouts[activeLayoutIndex].printLayout)
+	    .map((x:number ) => Object.values(x)[0]?.height)
+	    .reduce((prev,cur) => prev + cur);
+	  return height;
+	}
+	function getTotalWidth() {
+	  const width = Object.values(layouts[activeLayoutIndex].printLayout)
+	    .map((x:number ) => Object.values(x))[1]
+	    .map(x => x.width)
+	    .reduce((prev,cur) => prev + cur);
+	  return width;
+	}
 
 	return (
 		<div className="flex flex-col bg-base-100 h-screen" data-theme={theme}>
@@ -526,7 +524,7 @@ const Home: NextPage = () => {
 					{/* PREVIEW */}
 					<div className="inline-flex">
 						<div className="flex flex-col">
-							{/* <div className="divider">{(getTotalWidth())} in</div> */}
+							<div className="divider">{(getTotalWidth())} in</div>
 							<LayoutPreview
 								imagePreviewSrc={imagePreviewSrc}
 								bgColor={bgColor}
@@ -536,7 +534,7 @@ const Home: NextPage = () => {
 							/>
 						</div>
 						<div className="divider divider-horizontal border-base-content pt-12">
-							{/* <span className='[writing-mode:vertical-lr] rotate-180'>       {(getTotalHeight())} in</span> */}
+							<span className='[writing-mode:vertical-lr] rotate-180'>{(getTotalHeight())} in</span>
 						</div>
 					</div>
 					{/* ACTUAL SIZE - HIDDEN */}
