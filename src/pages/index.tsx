@@ -67,7 +67,7 @@ const Home: NextPage = () => {
 	const [theme, setTheme] = useState('light');
 	const [confirmModal, setConfirmModal] = useState(false);
 	const [selectedLayout, setSelectedLayout] = useState(layouts[0].name);
-  const [forceUpdate, setForceUpdate] = useState(0);
+	const [forceUpdate, setForceUpdate] = useState(0);
 
 	function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 		if (e.target.files && e.target.files.length > 0) {
@@ -84,8 +84,8 @@ const Home: NextPage = () => {
 		if (aspect) {
 			const { width, height } = e.currentTarget;
 			setCrop(centerAspectCrop(width, height, aspect));
-      // generatePreviewImage();
-      // console.log('nangyari na nga');
+			// generatePreviewImage();
+			// console.log('nangyari na nga');
 		}
 	}
 
@@ -120,41 +120,40 @@ const Home: NextPage = () => {
 		}
 	}
 
+	const generatePreviewImage = async () => {
+		if (
+			completedCrop?.width &&
+			completedCrop?.height &&
+			imgRef.current &&
+			previewCanvasRef.current
+		) {
+			// We use canvasPreview as it's much faster than imgPreview.
+			canvasPreview(
+				imgRef.current,
+				previewCanvasRef.current,
+				completedCrop,
+				scale,
+				rotate
+			);
+			// imgPreview()
 
-  const generatePreviewImage = 	async () => {
-    if (
-      completedCrop?.width &&
-      completedCrop?.height &&
-      imgRef.current &&
-      previewCanvasRef.current
-    ) {
-      // We use canvasPreview as it's much faster than imgPreview.
-      canvasPreview(
-        imgRef.current,
-        previewCanvasRef.current,
-        completedCrop,
-        scale,
-        rotate
-      );
-      // imgPreview()
+			const imgUrl = await imgPreview(
+				imgRef.current,
+				previewCanvasRef.current,
+				completedCrop,
+				scale,
+				rotate
+			);
+			console.log('this happened');
+			setImagePreviewSrc(imgUrl);
+		}
+	};
 
-      const imgUrl = await imgPreview(
-        imgRef.current,
-        previewCanvasRef.current,
-        completedCrop,
-        scale,
-        rotate
-      );
-        console.log('this happened');
-      setImagePreviewSrc(imgUrl);
-    }
-  }
-
-	useDebounceEffect(
-    generatePreviewImage,
-		100,
-		[completedCrop, scale, rotate]
-	);
+	useDebounceEffect(generatePreviewImage, 100, [
+		completedCrop,
+		scale,
+		rotate,
+	]);
 
 	function setCropAndAspect() {
 		if (aspect) {
@@ -167,7 +166,7 @@ const Home: NextPage = () => {
 			const w = layouts[activeLayoutIndex].aspectRatio[1];
 			setAspect(h / w);
 			setCrop(centerAspectCrop(width, height, 1 / 1));
-      // generatePreviewImage()
+			// generatePreviewImage()
 		}
 	}
 
@@ -183,22 +182,20 @@ const Home: NextPage = () => {
 				{Boolean(imgSrc) && (
 					<div className="flex flex-col items-center">
 						<div className="border-accent border-2 bg-checkered">
-              {/* update: {forceUpdate} */}
+							{/* update: {forceUpdate} */}
 							<ReactCrop
-              // key={forceUpdate}
-              ref={reactCropRef}
+								// key={forceUpdate}
+								ref={reactCropRef}
 								crop={crop}
 								onChange={(_, percentCrop) => {
-
-                  // console.log('percentCrop', percentCrop);
+									// console.log('percentCrop', percentCrop);
 									setCrop(percentCrop);
-                }
-								}
+								}}
 								onComplete={(c) => {
-                  // console.log('c', c);
+									// console.log('c', c);
 
-                  setCompletedCrop(c)
-                }}
+									setCompletedCrop(c);
+								}}
 								aspect={aspect}
 								ruleOfThirds
 							>
@@ -406,48 +403,48 @@ const Home: NextPage = () => {
 		replaceBtnRef.current?.focus();
 	}, [confirmModal]);
 
-  const activeLayoutIndex =
-  layouts.findIndex((x) => x.name == selectedLayout) || 0;
+	const activeLayoutIndex =
+		layouts.findIndex((x) => x.name == selectedLayout) || 0;
 
 	useEffect(() => {
 		if (selectedLayout === '') return;
-	
+
 		const h = layouts[activeLayoutIndex].aspectRatio[0];
 		const w = layouts[activeLayoutIndex].aspectRatio[1];
 		if (imgRef.current) {
 			setAspect(h / w);
 			setCrop(undefined);
-      const _imgSrc = imgSrc;
-      removeImage();
-      window.setTimeout(() => {
-        setImgSrc(_imgSrc);
-      }, 1);
+			const _imgSrc = imgSrc;
+			removeImage();
+			window.setTimeout(() => {
+				setImgSrc(_imgSrc);
+			}, 100);
 		} else {
 			setAspect(h / w);
 		}
-	}, [imgSrc, selectedLayout]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [activeLayoutIndex, selectedLayout]);
 
 	function removeImage() {
 		setImgSrc('');
 		setImagePreviewSrc('');
 	}
 
-  function getTotalHeight() {
-    const height = Object.values(layouts[activeLayoutIndex].printLayout)
-      .map((x:number ) => Object.values(x)[0]?.height)
-      .reduce((prev,cur) => prev + cur);
-    return height;
-  }
-  function getTotalWidth() {
-    const width = Object.values(layouts[activeLayoutIndex].printLayout)
-      .map((x:number ) => Object.values(x))[1]
-      .map(x => x.width)
-      .reduce((prev,cur) => prev + cur);
+	// function getTotalHeight() {
+	//   const height = Object.values(layouts[activeLayoutIndex].printLayout)
+	//     .map((x:number ) => Object.values(x)[0]?.height)
+	//     .reduce((prev,cur) => prev + cur);
+	//   return height;
+	// }
+	// function getTotalWidth() {
+	//   const width = Object.values(layouts[activeLayoutIndex].printLayout)
+	//     .map((x:number ) => Object.values(x))[1]
+	//     .map(x => x.width)
+	//     .reduce((prev,cur) => prev + cur);
 
-      // .reduce((prev,cur) => prev.width + cur.width);
-    return JSON.stringify(width);
-  }
-  
+	//     // .reduce((prev,cur) => prev.width + cur.width);
+	//   return JSON.stringify(width);
+	// }
 
 	return (
 		<div className="flex flex-col bg-base-100 h-screen" data-theme={theme}>
@@ -457,7 +454,7 @@ const Home: NextPage = () => {
 				autoClose={1500}
 				position="bottom-right"
 			/>
-      {/* Height: {getTotalHeight()}
+			{/* Height: {getTotalHeight()}
       width: {getTotalWidth()} */}
 			<Head>
 				<title>ID Picture Print Layout Generator Tool</title>
@@ -529,7 +526,7 @@ const Home: NextPage = () => {
 					{/* PREVIEW */}
 					<div className="inline-flex">
 						<div className="flex flex-col">
-							<div className="divider">{(getTotalWidth())} in</div>
+							{/* <div className="divider">{(getTotalWidth())} in</div> */}
 							<LayoutPreview
 								imagePreviewSrc={imagePreviewSrc}
 								bgColor={bgColor}
@@ -539,9 +536,7 @@ const Home: NextPage = () => {
 							/>
 						</div>
 						<div className="divider divider-horizontal border-base-content pt-12">
-            
-            <span className='[writing-mode:vertical-lr] rotate-180'>       {(getTotalHeight())} in</span>
-     
+							{/* <span className='[writing-mode:vertical-lr] rotate-180'>       {(getTotalHeight())} in</span> */}
 						</div>
 					</div>
 					{/* ACTUAL SIZE - HIDDEN */}
