@@ -1,6 +1,6 @@
  const layouts = [
 	{
-		"name": "Package A (Php 30.00)",
+		"name": "Package A (PHP 30.00)",
     "description": "2x2 4pcs, 1x1 4pcs",
 		"aspectRatio": [1, 1],
 		"printLayout": {
@@ -45,7 +45,7 @@
 		}
 	},
   {
-		"name": "Package B (Php 25.00)",
+		"name": "Package B (PHP 25.00)",
     "description": "4pcs 2x2 only",
 		"aspectRatio": [1, 1],
 		"printLayout": {
@@ -73,7 +73,7 @@
 		}
 	},
   {
-		"name": "Package C (Php 20.00)",
+		"name": "Package C (PHP 20.00)",
     "description": "2x2 2pcs, 1x1 4pcs",
 		"aspectRatio": [1, 1],
 		"printLayout": {
@@ -108,7 +108,7 @@
 		}
 	},
   {
-		"name": "Package D (Php 15.00)",
+		"name": "Package D (PHP 15.00)",
     "description": "8pcs 1x1 only",
 		"aspectRatio": [1, 1],
 		"printLayout": {
