@@ -603,6 +603,7 @@ const Home: NextPage = () => {
 								}
 								setPixelDensityDL(value);
 							}}
+              disabled
 						/>
 
 						<div
@@ -639,6 +640,7 @@ const Home: NextPage = () => {
 								}
 								setPixelDensityCopy(value);
 							}}
+              disabled
 						/>
 
 						<div

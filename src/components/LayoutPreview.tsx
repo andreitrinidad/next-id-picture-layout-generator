@@ -73,36 +73,6 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 				ref={ref}
 			>
 				{renderLayout(layouts[activeLayoutIndex < 0 ? 0 : activeLayoutIndex])}
-				{/* <div className='flex'>
-    <div className="relative border" style={{borderColor: borderColor, height: unitToPixel(2, ppi) ,width: unitToPixel(2, ppi)}}>
-      { imagePreviewSrc && <Image layout='fill' src={imagePreviewSrc} alt=''/>}
-    </div>
-    <div className="relative border" style={{borderColor: borderColor, height: unitToPixel(2, ppi) ,width: unitToPixel(2, ppi)}}>
-      { imagePreviewSrc && <Image layout='fill' src={imagePreviewSrc} alt=''/>}
-    </div>
-    </div>
-    <div className='flex'>
-    <div className="relative border" style={{borderColor: borderColor, height: unitToPixel(2, ppi) ,width: unitToPixel(2, ppi)}}>
-      { imagePreviewSrc && <Image layout='fill' src={imagePreviewSrc} alt=''/>}
-    </div>
-    <div className="relative border" style={{borderColor: borderColor, height: unitToPixel(2, ppi) ,width: unitToPixel(2, ppi)}}>
-      { imagePreviewSrc && <Image layout='fill' src={imagePreviewSrc} alt=''/>}
-    </div>
-    </div>
-    <div className='flex'>
-    <div className="relative border" style={{borderColor: borderColor, height: unitToPixel(1, ppi) ,width: unitToPixel(1, ppi)}}>
-      { imagePreviewSrc && <Image layout='fill' src={imagePreviewSrc} alt=''/>}
-    </div>
-    <div className="relative border" style={{borderColor: borderColor, height: unitToPixel(1, ppi) ,width: unitToPixel(1, ppi)}}>
-      { imagePreviewSrc && <Image layout='fill' src={imagePreviewSrc} alt=''/>}
-    </div>
-    <div className="relative border" style={{borderColor: borderColor, height: unitToPixel(1, ppi) ,width: unitToPixel(1, ppi)}}>
-      { imagePreviewSrc && <Image layout='fill' src={imagePreviewSrc} alt=''/>}
-    </div>
-    <div className="relative border" style={{borderColor: borderColor, height: unitToPixel(1, ppi) ,width: unitToPixel(1, ppi)}}>
-      { imagePreviewSrc && <Image layout='fill' src={imagePreviewSrc} alt=''/>}
-    </div>
-    </div> */}
 			</div>
 		);
 	}
