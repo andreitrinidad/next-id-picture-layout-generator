@@ -84,8 +84,6 @@ const Home: NextPage = () => {
 		if (aspect) {
 			const { width, height } = e.currentTarget;
 			setCrop(centerAspectCrop(width, height, aspect));
-			// generatePreviewImage();
-			// console.log('nangyari na nga');
 		}
 	}
 
@@ -144,7 +142,6 @@ const Home: NextPage = () => {
 				scale,
 				rotate
 			);
-			console.log('this happened');
 			setImagePreviewSrc(imgUrl);
 		}
 	};
@@ -188,12 +185,9 @@ const Home: NextPage = () => {
 								ref={reactCropRef}
 								crop={crop}
 								onChange={(_, percentCrop) => {
-									// console.log('percentCrop', percentCrop);
 									setCrop(percentCrop);
 								}}
 								onComplete={(c) => {
-									// console.log('c', c);
-
 									setCompletedCrop(c);
 								}}
 								aspect={aspect}
@@ -431,17 +425,17 @@ const Home: NextPage = () => {
 	}
 
 	function getTotalHeight() {
-	  const height = Object.values(layouts[activeLayoutIndex].printLayout)
-	    .map((x:number ) => Object.values(x)[0]?.height)
-	    .reduce((prev,cur) => prev + cur);
-	  return height;
+		const height = Object.values(layouts[activeLayoutIndex].printLayout)
+			.map((x: number) => Object.values(x)[0]?.height)
+			.reduce((prev, cur) => prev + cur);
+		return height;
 	}
 	function getTotalWidth() {
-	  const width = Object.values(layouts[activeLayoutIndex].printLayout)
-	    .map((x:number ) => Object.values(x))[1]
-	    .map(x => x.width)
-	    .reduce((prev,cur) => prev + cur);
-	  return width;
+		const width = Object.values(layouts[activeLayoutIndex].printLayout)
+			.map((x: number) => Object.values(x))[1]
+			.map((x) => x.width)
+			.reduce((prev, cur) => prev + cur);
+		return width;
 	}
 
 	return (
@@ -524,7 +518,7 @@ const Home: NextPage = () => {
 					{/* PREVIEW */}
 					<div className="inline-flex">
 						<div className="flex flex-col">
-							<div className="divider">{(getTotalWidth())} in</div>
+							<div className="divider">{getTotalWidth()} in</div>
 							<LayoutPreview
 								imagePreviewSrc={imagePreviewSrc}
 								bgColor={bgColor}
@@ -534,13 +528,13 @@ const Home: NextPage = () => {
 							/>
 						</div>
 						<div className="divider divider-horizontal border-base-content pt-12">
-							<span className='[writing-mode:vertical-lr] rotate-180'>{(getTotalHeight())} in</span>
+							<span className="[writing-mode:vertical-lr] rotate-180">
+								{getTotalHeight()} in
+							</span>
 						</div>
 					</div>
 					{/* ACTUAL SIZE - HIDDEN */}
-					<div 
-          className="absolute -z-10 top-0 left-0 h-2 w-2 overflow-hidden "
-          >
+					<div className="absolute -z-10 top-0 left-0 h-2 w-2 overflow-hidden ">
 						<LayoutPreview
 							ref={previewRef}
 							imagePreviewSrc={imagePreviewSrc}
@@ -603,7 +597,7 @@ const Home: NextPage = () => {
 								}
 								setPixelDensityDL(value);
 							}}
-              disabled
+							disabled
 						/>
 
 						<div
@@ -640,7 +634,7 @@ const Home: NextPage = () => {
 								}
 								setPixelDensityCopy(value);
 							}}
-              disabled
+							disabled
 						/>
 
 						<div
