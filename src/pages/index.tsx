@@ -539,7 +539,7 @@ const Home: NextPage = () => {
 					</div>
 					{/* ACTUAL SIZE - HIDDEN */}
 					<div 
-          // className="absolute -z-10 top-0 left-0 h-2 w-2 overflow-hidden "
+          className="absolute -z-10 top-0 left-0 h-2 w-2 overflow-hidden "
           >
 						<LayoutPreview
 							ref={previewRef}
