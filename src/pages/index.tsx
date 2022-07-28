@@ -538,13 +538,15 @@ const Home: NextPage = () => {
 						</div>
 					</div>
 					{/* ACTUAL SIZE - HIDDEN */}
-					<div className="absolute -z-10 top-0 left-0 h-2 w-2 overflow-hidden ">
+					<div 
+          className="absolute -z-10 top-0 left-0 h-2 w-2 overflow-hidden "
+          >
 						<LayoutPreview
 							ref={previewRef}
 							imagePreviewSrc={imagePreviewSrc}
 							borderColor={borderColor}
 							bgColor={bgColor}
-							ppi={pixelDensityDL}
+							ppi={300}
 							selectedLayout={selectedLayout}
 						/>
 					</div>
