@@ -703,7 +703,7 @@ const Home: NextPage = () => {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">
               <span className="text-secondary font-bold">03</span>{' '}
-              Customize
+              Adjustments
             </h2>
             <button className="btn btn-xs btn-ghost" onClick={() => {
               setData({
