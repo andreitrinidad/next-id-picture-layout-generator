@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useReducer, useState } fro
 
 interface IDataProps {
   brightness?: number,
-  contrast?: number
+  contrast?: number,
+  saturation?: number,
 }
 
 interface IImageContextProps {
@@ -15,7 +16,8 @@ const ImageContext = createContext<IImageContextProps>({setData: () => {}});
 const ImageContextProvider = (props: any) => {
   const [data, setData] = useState<IDataProps>({
     brightness: 100,
-    contrast: 100
+    contrast: 100,
+    saturation: 100
   });
   return <ImageContext.Provider value={{data, setData}}>{props.children}</ImageContext.Provider>;
 };

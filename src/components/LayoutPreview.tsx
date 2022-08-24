@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React from 'react';
 import { useImageContext } from '../contexts/ImageContext';
 import layouts from '../layouts';
+import { useDebounce } from '../useDebounce';
 
 interface ILayoutPreviewProps {
 	imagePreviewSrc: string;
@@ -27,6 +28,7 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 	({ imagePreviewSrc, bgColor, borderColor, ppi = 220, selectedLayout }, ref) => {
 
     const {data} = useImageContext();
+    const debouncedData = useDebounce(data, 100);
 
 		// in here we assume the 1 unit is 1 inches
 		function unitToPixel(unit: number, ppi: number = 220): string {
@@ -41,7 +43,7 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 						borderColor: borderColor,
 						height: unitToPixel(col.height, ppi),
 						width: unitToPixel(col.width, ppi),
-            filter:  `brightness(${data?.brightness}%) contrast(${data?.contrast}%)`
+            filter:  `brightness(${debouncedData?.brightness}%) contrast(${data?.contrast}%) saturate(${data?.saturation}%)`
 					}}
 				>
 					{imagePreviewSrc && (

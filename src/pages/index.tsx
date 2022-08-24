@@ -708,7 +708,8 @@ const Home: NextPage = () => {
             <button className="btn btn-xs btn-ghost" onClick={() => {
               setData({
                 brightness: 100,
-                contrast: 100
+                contrast: 100,
+                saturation: 100
               })
             }}>RESET</button>
           </div>
@@ -716,7 +717,7 @@ const Home: NextPage = () => {
 					<div className="">
             <label className="block uppercase font-bold text-sm mb-4">
               Brightness: <span className="badge badge-primary badge-outline">{data?.brightness}%</span>
-              <input type="range" min="-100" max="200" value={data?.brightness} className="range range-lg mt-2" onChange={(e) => {
+              <input type="range" min="0" max="200" value={data?.brightness} className="range range-lg mt-2" onChange={(e) => {
                 setData((prevState: any) => {
                   const newData = {...prevState};
                   newData.brightness = e.target.value
@@ -724,12 +725,22 @@ const Home: NextPage = () => {
                 })
               }} />
             </label>
-            <label className="block uppercase font-bold text-sm">
+            <label className="block uppercase font-bold text-sm mb-4">
               Contrast: <span className="badge badge-primary badge-outline">{data?.contrast}%</span>
-              <input type="range" min="-100" max="200" value={data?.contrast} className="range range-lg mt-2" onChange={(e) => {
+              <input type="range" min="0" max="200" value={data?.contrast} className="range range-lg mt-2" onChange={(e) => {
                 setData((prevState: any) => {
                   const newData = {...prevState};
                   newData.contrast = e.target.value
+                  return newData;
+                })
+              }} />
+            </label>
+            <label className="block uppercase font-bold text-sm">
+              Saturation: <span className="badge badge-primary badge-outline">{data?.saturation}%</span>
+              <input type="range" min="0" max="200" value={data?.saturation} className="range range-lg mt-2" onChange={(e) => {
+                setData((prevState: any) => {
+                  const newData = {...prevState};
+                  newData.saturation = e.target.value
                   return newData;
                 })
               }} />
