@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 import Image from 'next/image';
 import React from 'react';
+import { useImageContext } from '../contexts/ImageContext';
 import layouts from '../layouts';
 
 interface ILayoutPreviewProps {
@@ -24,6 +25,9 @@ interface ILayoutObject {
 
 const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 	({ imagePreviewSrc, bgColor, borderColor, ppi = 220, selectedLayout }, ref) => {
+
+    const {data} = useImageContext();
+
 		// in here we assume the 1 unit is 1 inches
 		function unitToPixel(unit: number, ppi: number = 220): string {
 			return `${unit * ppi}px`;
@@ -37,6 +41,7 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 						borderColor: borderColor,
 						height: unitToPixel(col.height, ppi),
 						width: unitToPixel(col.width, ppi),
+            filter:  `brightness(${data?.brightness}%) contrast(${data?.contrast}%)`
 					}}
 				>
 					{imagePreviewSrc && (
@@ -68,7 +73,7 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 
 		return (
 			<div
-				style={{ background: bgColor }}
+				style={{ background: bgColor}}
 				className="inline-block"
 				ref={ref}
 			>

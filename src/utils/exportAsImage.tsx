@@ -1,32 +1,74 @@
 import html2canvas from "html2canvas";
 // @ts-ignore: Unreachable code error
-import {changeDpiDataUrl} from "changedpi";
+import screenshot from "image-screenshot"
+import * as htmlToImage from 'html-to-image';
+import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image';
+// @ts-ignore: Unreachable code error
+import {changeDpiDataUrl, changeDpiBlob} from "changedpi";
 
 const exportAsImage = async (element: HTMLDivElement|null, imageFileName: string, ppi: number = 220, callback?: Function) => {
 	if (element == null) return;
-  const canvas = await html2canvas(element);
-	const image = canvas.toDataURL('image/png', 1.0);
-  const image150 = changeDpiDataUrl(image, ppi);
-	downloadImage(image150, imageFileName);
-  callback && callback();
+  // screenshot(element).download();
+  htmlToImage.toPng(element)
+  .then(function (dataUrl) {
+    // var img = new Image();
+    // img.src = dataUrl;
+    // document.body.appendChild(img);
+      const imageNewDpi = changeDpiDataUrl(dataUrl, ppi);
+	    downloadImage(imageNewDpi, imageFileName);
+  })
+  .catch(function (error) {
+    console.error('oops, something went wrong!', error);
+  });
+  // screenshot(element).then(data => console.log(data))
+  // const canvas = await html2canvas(element);
+	// const image = canvas.toDataURL('image/png', 1.0);
+
+  // callback && callback();
 };
 
 export const copyImage = async (element: HTMLDivElement|null, ppi: number = 220, callback: Function) => {
 	if (element == null) return;
-  const canvas = await html2canvas(element);
-	const image = canvas.toDataURL('image/png', 1.0);
-  const image150 = changeDpiDataUrl(image, ppi); //hard coded 
-  const blob = await (await fetch(image150)).blob(); 
-  try {
-    navigator.clipboard.write([
-      new ClipboardItem({
-        [blob.type]: blob
-      })
-    ]);
-    callback();
-  } catch (error) {
-    alert('unsupported browser!')
-  }
+
+  // screenshot(element).download();
+  htmlToImage.toBlob(element)
+  .then(function (data) {
+    // var img = new Image();
+    // img.src = dataUrl;
+    console.log(data);
+    // document.body.appendChild(img);
+      const imageNewDpi = changeDpiBlob(data, ppi);
+        try {
+        navigator.clipboard.write([
+          new ClipboardItem({
+            // @ts-ignore: Unreachable code error
+            [data.type]: imageNewDpi
+          })
+        ]);
+        callback();
+      } catch (error) {
+        alert('unsupported browser!')
+      }
+
+      // downloadImage(imageNewDpi, imageFileName);
+  })
+  .catch(function (error) {
+    console.error('oops, something went wrong!', error);
+  });
+  // const canvas = await html2canvas(element);
+	// const image = canvas.toDataURL('image/png', 1.0);
+  // const image150 = changeDpiDataUrl(image, ppi); //hard coded 
+  // const blob = await (await fetch(image150)).blob(); 
+  // try {
+  //   navigator.clipboard.write([
+  //     new ClipboardItem({
+  //       [blob.type]: blob
+  //     })
+  //   ]);
+  //   callback();
+  // } catch (error) {
+  //   alert('unsupported browser!')
+  // }
 
 };
 

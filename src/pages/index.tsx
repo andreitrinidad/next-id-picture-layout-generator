@@ -26,6 +26,7 @@ import FocusTrap from 'focus-trap-react';
 import { LayoutSelector } from '../components/LayoutSelector';
 import layouts from '../layouts';
 import { setTimeout } from 'timers/promises';
+import { useImageContext } from '../contexts/ImageContext';
 
 function centerAspectCrop(
 	mediaWidth: number,
@@ -68,6 +69,10 @@ const Home: NextPage = () => {
 	const [confirmModal, setConfirmModal] = useState(false);
 	const [selectedLayout, setSelectedLayout] = useState(layouts[0].name);
 	const [forceUpdate, setForceUpdate] = useState(0);
+  // image modifcation related states
+  const [brightness, setBrightness] = useState(100);
+	const [contrast, setContrast] = useState(100);
+  const {data, setData} = useImageContext();
 
 	function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 		if (e.target.files && e.target.files.length > 0) {
@@ -693,6 +698,46 @@ const Home: NextPage = () => {
 							<Icon.HelpCircle />
 						</div>
 					</div>
+				</div>
+        <div className="flex-1 max-w-[300px] min-w-[300px]">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">
+              <span className="text-secondary font-bold">03</span>{' '}
+              Customize
+            </h2>
+            <button className="btn btn-xs btn-ghost" onClick={() => {
+              setData({
+                brightness: 100,
+                contrast: 100
+              })
+            }}>RESET</button>
+          </div>
+			
+					<div className="">
+            <label className="block uppercase font-bold text-sm mb-4">
+              Brightness: <span className="badge badge-primary badge-outline">{data?.brightness}%</span>
+              <input type="range" min="-100" max="200" value={data?.brightness} className="range range-lg mt-2" onChange={(e) => {
+                setData((prevState: any) => {
+                  const newData = {...prevState};
+                  newData.brightness = e.target.value
+                  return newData;
+                })
+              }} />
+            </label>
+            <label className="block uppercase font-bold text-sm">
+              Contrast: <span className="badge badge-primary badge-outline">{data?.contrast}%</span>
+              <input type="range" min="-100" max="200" value={data?.contrast} className="range range-lg mt-2" onChange={(e) => {
+                setData((prevState: any) => {
+                  const newData = {...prevState};
+                  newData.contrast = e.target.value
+                  return newData;
+                })
+              }} />
+            </label>
+            
+					</div>
+
+				
 				</div>
 			</section>
 			{/* modals */}
