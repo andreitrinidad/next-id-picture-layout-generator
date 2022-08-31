@@ -362,8 +362,8 @@ const Home: NextPage = () => {
 	useEffect(() => {
 		const savedTheme = localStorage.getItem('theme') || 'lofi';
 		setTheme(savedTheme);
-		setPixelDensityCopy(96);
-		setPixelDensityDL(96);
+		setPixelDensityCopy(220);
+		setPixelDensityDL(220);
 
 		function detectKeys(event: any) {
 			if ((event.ctrlKey || event.metaKey) && event.keyCode == 83) {
