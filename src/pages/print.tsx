@@ -10,7 +10,7 @@ import layouts from '../layouts';
 import useImageDimensions from '../hooks/useImageDimensions';
 import { useRouter } from 'next/router';
 // @ts-ignore: Unreachable code error
-// import { localStorage } from 'browser-monads';
+import { localStorage } from 'browser-monads';
 
 const PrintPreview: NextPage = () => {
 	const { data, setData } = useImageContext();
