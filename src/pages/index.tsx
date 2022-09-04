@@ -15,7 +15,7 @@ import { HexColorPicker } from 'react-colorful';
 import 'react-image-crop/dist/ReactCrop.css';
 import Image from 'next/image';
 import LayoutPreview from '../components/LayoutPreview';
-import exportAsImage, { copyImage } from '../utils/exportAsImage';
+import exportAsImage, { copyImage, printImage } from '../utils/exportAsImage';
 import Head from 'next/head';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -27,6 +27,7 @@ import { LayoutSelector } from '../components/LayoutSelector';
 import layouts from '../layouts';
 import { setTimeout } from 'timers/promises';
 import { useImageContext } from '../contexts/ImageContext';
+import { useRouter } from 'next/router';
 
 function centerAspectCrop(
 	mediaWidth: number,
@@ -53,26 +54,28 @@ const Home: NextPage = () => {
 	const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 	const imgRef = useRef<HTMLImageElement>(null);
 	const reactCropRef = useRef(null);
+	const router = useRouter();
 	const [crop, setCrop] = useState<Crop>();
 	const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
 	const [scale, setScale] = useState(1);
 	const [rotate, setRotate] = useState(0);
 	const [aspect, setAspect] = useState<number | undefined>(1 / 1);
-	const [imagePreviewSrc, setImagePreviewSrc] = useState('');
+	// const [imagePreviewSrc, setImagePreviewSrc] = useState('');
 	const [bgColor, setBgColor] = useState('#FFF');
 	const [borderColor, setBorderColor] = useState('#000');
 	const [pixelDensityCopy, setPixelDensityCopy] = useState(220);
 	const [pixelDensityDL, setPixelDensityDL] = useState(220);
 	const previewRef = useRef<HTMLDivElement>(null);
 	const replaceBtnRef = useRef<HTMLButtonElement>(null);
-	const [theme, setTheme] = useState('light');
+	const [theme, setTheme] = useState('lofi');
 	const [confirmModal, setConfirmModal] = useState(false);
-	const [selectedLayout, setSelectedLayout] = useState(layouts[0].name);
-	const [forceUpdate, setForceUpdate] = useState(0);
-  // image modifcation related states
-  const [brightness, setBrightness] = useState(100);
-	const [contrast, setContrast] = useState(100);
-  const {data, setData} = useImageContext();
+	// const [selectedLayout, setSelectedLayout] = useState(layouts[0].name);
+	// image modifcation related states
+
+	const { data, setData } = useImageContext();
+	// const { imagePreviewSrc = '' } = data;
+	const imagePreviewSrc = data?.imagePreviewSrc;
+	const selectedLayout = data?.selectedLayout;
 
 	function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 		if (e.target.files && e.target.files.length > 0) {
@@ -147,7 +150,11 @@ const Home: NextPage = () => {
 				scale,
 				rotate
 			);
-			setImagePreviewSrc(imgUrl);
+			setData((prevState: any) => {
+				const newData = { ...prevState };
+				newData.imagePreviewSrc = imgUrl;
+				return newData;
+			});
 		}
 	};
 
@@ -353,18 +360,24 @@ const Home: NextPage = () => {
 		);
 	}
 
+	function printPreview() {
+		printImage(previewRef.current, pixelDensityCopy, () => {
+			toast.success('Generated print preview');
+      router.push('/print');
+		});
+	}
+
 	function downloadResult() {
 		exportAsImage(previewRef.current, 'image', pixelDensityDL, () =>
 			toast.success('Image downloaded!')
 		);
 	}
 
+  
 	useEffect(() => {
-		const savedTheme = localStorage.getItem('theme') || 'lofi';
-		setTheme(savedTheme);
-		setPixelDensityCopy(220);
-		setPixelDensityDL(220);
-
+    const savedTheme = localStorage.getItem('theme') || 'lofi';
+    setTheme(savedTheme);
+    
 		function detectKeys(event: any) {
 			if ((event.ctrlKey || event.metaKey) && event.keyCode == 83) {
 				event.preventDefault();
@@ -426,16 +439,23 @@ const Home: NextPage = () => {
 
 	function removeImage() {
 		setImgSrc('');
-		setImagePreviewSrc('');
+		// setImagePreviewSrc('');
+		setData((prevState: any) => {
+			const newData = { ...prevState };
+			newData.imagePreviewSrc = '';
+			return newData;
+		});
 	}
 
 	function getTotalHeight() {
+		if (!data?.selectedLayout) return;
 		const height = Object.values(layouts[activeLayoutIndex].printLayout)
 			.map((x: number) => Object.values(x)[0]?.height)
 			.reduce((prev, cur) => prev + cur);
 		return height;
 	}
 	function getTotalWidth() {
+		if (!data?.selectedLayout) return;
 		const width = Object.values(layouts[activeLayoutIndex].printLayout)
 			.map((x: number) => Object.values(x))[1]
 			.map((x) => x.width)
@@ -463,7 +483,8 @@ const Home: NextPage = () => {
 				/>
 				{/* <!-- Primary Meta Tags --> */}
 				<title>
-					IDPPLG (ID Picture Print Layout Generator) Tool - by Andrei Trinidad
+					IDPPLG (ID Picture Print Layout Generator) Tool - by Andrei
+					Trinidad
 				</title>
 				<meta
 					name="title"
@@ -509,16 +530,13 @@ const Home: NextPage = () => {
 					content="https://og-image.vercel.app/ID%20Picture%20Print%20Layout%20Generator%20Tool%20by%20%40andreitrinidad.png?theme=dark&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-white-logo.svg&images=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fremojansen%2Flogo.ts%40master%2Fts.svg"
 				/>
 			</Head>
-			<AppHeader setTheme={setTheme} />
+			<AppHeader setTheme={setTheme} print={printPreview} />
 
 			<section className="flex flex-1 p-8 gap-10 bg-base-100 overflow-scroll">
-				<LayoutSelector
-					selectedLayout={selectedLayout}
-					setSelectedLayout={setSelectedLayout}
-				/>
+				<LayoutSelector />
 				<div className="flex-1 max-w-xl min-w-[500px]">
 					<h2 className="text-lg font-semibold mb-4">
-						<span className="text-secondary font-bold">01</span>{' '}
+						<span className="text-primary font-bold">01</span>{' '}
 						Choose your image
 					</h2>
 					{/* Controls */}
@@ -542,7 +560,7 @@ const Home: NextPage = () => {
 				</div>
 				<div className="flex-1">
 					<h2 className="text-lg font-semibold mb-4">
-						<span className="text-secondary font-bold">02</span>{' '}
+						<span className="text-primary font-bold">02</span>{' '}
 						Preview and Save
 					</h2>
 					<div className="flex gap-4 mb-4 flex-wrap">
@@ -575,8 +593,8 @@ const Home: NextPage = () => {
 							<div className="divider">{getTotalWidth()} in</div>
 							<LayoutPreview
 								imagePreviewSrc={imagePreviewSrc}
-								bgColor={bgColor}
-								borderColor={borderColor}
+								bgColor={data?.bgColor}
+								borderColor={data?.borderColor}
 								ppi={100}
 								selectedLayout={selectedLayout}
 							/>
@@ -591,10 +609,10 @@ const Home: NextPage = () => {
 					<div className="absolute -z-10 top-0 left-0 h-2 w-2 overflow-hidden ">
 						<LayoutPreview
 							ref={previewRef}
-							imagePreviewSrc={imagePreviewSrc}
-							borderColor={borderColor}
-							bgColor={bgColor}
-							ppi={pixelDensityDL}
+							imagePreviewSrc={data?.imagePreviewSrc}
+							borderColor={data?.borderColor}
+							bgColor={data?.bgColor}
+							ppi={220}
 							selectedLayout={selectedLayout}
 						/>
 					</div>
@@ -699,56 +717,88 @@ const Home: NextPage = () => {
 						</div>
 					</div>
 				</div>
-        <div className="flex-1 max-w-[300px] min-w-[300px]">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">
-              <span className="text-secondary font-bold">03</span>{' '}
-              Adjustments
-            </h2>
-            <button className="btn btn-xs btn-ghost" onClick={() => {
-              setData({
-                brightness: 100,
-                contrast: 100,
-                saturation: 100
-              })
-            }}>RESET</button>
-          </div>
-			
-					<div className="">
-            <label className="block uppercase font-bold text-sm mb-4">
-              Brightness: <span className="badge badge-primary badge-outline">{data?.brightness}%</span>
-              <input type="range" min="0" max="200" value={data?.brightness} className="range range-lg mt-2" onChange={(e) => {
-                setData((prevState: any) => {
-                  const newData = {...prevState};
-                  newData.brightness = e.target.value
-                  return newData;
-                })
-              }} />
-            </label>
-            <label className="block uppercase font-bold text-sm mb-4">
-              Contrast: <span className="badge badge-primary badge-outline">{data?.contrast}%</span>
-              <input type="range" min="0" max="200" value={data?.contrast} className="range range-lg mt-2" onChange={(e) => {
-                setData((prevState: any) => {
-                  const newData = {...prevState};
-                  newData.contrast = e.target.value
-                  return newData;
-                })
-              }} />
-            </label>
-            <label className="block uppercase font-bold text-sm">
-              Saturation: <span className="badge badge-primary badge-outline">{data?.saturation}%</span>
-              <input type="range" min="0" max="200" value={data?.saturation} className="range range-lg mt-2" onChange={(e) => {
-                setData((prevState: any) => {
-                  const newData = {...prevState};
-                  newData.saturation = e.target.value
-                  return newData;
-                })
-              }} />
-            </label>
-            
+				<div className="flex-1 max-w-[300px] min-w-[300px]">
+					<div className="flex justify-between items-center mb-4">
+						<h2 className="text-lg font-semibold">
+							<span className="text-primary font-bold">03</span>{' '}
+							Adjustments
+						</h2>
+						<button
+							className="btn btn-xs btn-ghost"
+							onClick={() => {
+								setData({
+									brightness: 100,
+									contrast: 100,
+									saturation: 100,
+								});
+							}}
+						>
+							RESET
+						</button>
 					</div>
 
-				
+					<div className="">
+						<label className="block uppercase font-bold text-sm mb-4">
+							Brightness:{' '}
+							<span className="badge badge-primary badge-outline">
+								{data?.brightness}%
+							</span>
+							<input
+								type="range"
+								min="0"
+								max="200"
+								value={data?.brightness}
+								className="range range-lg mt-2"
+								onChange={(e) => {
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.brightness = e.target.value;
+										return newData;
+									});
+								}}
+							/>
+						</label>
+						<label className="block uppercase font-bold text-sm mb-4">
+							Contrast:{' '}
+							<span className="badge badge-primary badge-outline">
+								{data?.contrast}%
+							</span>
+							<input
+								type="range"
+								min="0"
+								max="200"
+								value={data?.contrast}
+								className="range range-lg mt-2"
+								onChange={(e) => {
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.contrast = e.target.value;
+										return newData;
+									});
+								}}
+							/>
+						</label>
+						<label className="block uppercase font-bold text-sm">
+							Saturation:{' '}
+							<span className="badge badge-primary badge-outline">
+								{data?.saturation}%
+							</span>
+							<input
+								type="range"
+								min="0"
+								max="200"
+								value={data?.saturation}
+								className="range range-lg mt-2"
+								onChange={(e) => {
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.saturation = e.target.value;
+										return newData;
+									});
+								}}
+							/>
+						</label>
+					</div>
 				</div>
 			</section>
 			{/* modals */}

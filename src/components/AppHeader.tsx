@@ -1,20 +1,25 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import * as Icon from 'react-feather';
+import { useImageContext } from '../contexts/ImageContext';
 
 interface IAppHeaderProps {
-	setTheme: Function;
+  print: Function;
 }
 
-export const AppHeader: React.FC<IAppHeaderProps> = ({ setTheme }) => {
+export const AppHeader: React.FC<IAppHeaderProps> = ({ print }) => {
+
+  const {data, setData} = useImageContext();
+
 	return (
 		<header className="flex bg-primary px-8 items-center justify-between gap-6">
-			<a href="https://www.facebook.com/portalngprint" className="relative h-[90px] w-[90px]">
+			<a href="https://www.facebook.com/portalngprint" className="relative h-[50px] w-[50px]">
 				<Image
 					src="/paprintngapo.png"
 					layout="fill"
-					height={90}
-					width={90}
+					height={50}
+					width={50}
           alt="Paprint Nga Po"
 				/>
 			</a>
@@ -23,6 +28,14 @@ export const AppHeader: React.FC<IAppHeaderProps> = ({ setTheme }) => {
 			</h1>
 			{/* header */}
 			<div className="flex items-center gap-2">
+      
+					<button
+						className="btn btn-secondary btn-lg gap-2"
+            onClick={() => print()}
+					>
+						<Icon.Printer />
+            Print Preview
+					</button>
 				<div className="dropdown dropdown-left ">
 					<label tabIndex={0} className="btn btn-accent m-1 gap-2">
 						<Icon.Droplet /> theme
@@ -39,8 +52,13 @@ export const AppHeader: React.FC<IAppHeaderProps> = ({ setTheme }) => {
 								<li
 									key={i}
 									onClick={() => {
-										setTheme(val);
+										// setTheme(val);
 										localStorage.setItem('theme', val);
+                    setData((prevState: any) => {
+                      const newData = { ...prevState };
+                      newData.theme = '';
+                      return newData;
+                    })
 									}}
 								>
 									<a>{val}</a>
