@@ -25,7 +25,7 @@ const PrintPreview: NextPage = () => {
 
   let image = '';
   if (typeof window !== 'undefined') {
-     image = localStorage.getItem('image');
+     image = localStorage.getItem('image') || '';
   }
 
 	useEffect(() => {
