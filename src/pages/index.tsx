@@ -28,6 +28,7 @@ import layouts from '../layouts';
 import { setTimeout } from 'timers/promises';
 import { useImageContext } from '../contexts/ImageContext';
 import { useRouter } from 'next/router';
+import useImageDimensions from '../hooks/useImageDimensions';
 
 function centerAspectCrop(
 	mediaWidth: number,
@@ -71,7 +72,7 @@ const Home: NextPage = () => {
 	const [confirmModal, setConfirmModal] = useState(false);
 	// const [selectedLayout, setSelectedLayout] = useState(layouts[0].name);
 	// image modifcation related states
-
+  const { height, width } = useImageDimensions();
 	const { data, setData } = useImageContext();
 	// const { imagePreviewSrc = '' } = data;
 	const imagePreviewSrc = data?.imagePreviewSrc;
@@ -373,10 +374,11 @@ const Home: NextPage = () => {
 		);
 	}
 
+  let savedTheme = 'lofi';
   
 	useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'lofi';
-    setTheme(savedTheme);
+    // savedTheme = 
+    // setTheme(savedTheme);
     
 		function detectKeys(event: any) {
 			if ((event.ctrlKey || event.metaKey) && event.keyCode == 83) {
@@ -415,11 +417,21 @@ const Home: NextPage = () => {
 		replaceBtnRef.current?.focus();
 	}, [confirmModal]);
 
+  // state dependent variable
 	const activeLayoutIndex =
 		layouts.findIndex((x) => x.name == selectedLayout) || 0;
 
 	useEffect(() => {
-		if (selectedLayout === '') return;
+		if (selectedLayout === '') {
+      
+      setData((prevState: any) => {
+        const newData = { ...prevState };
+        newData.selectedLayout = layouts[0].name || '';
+        return newData;
+      });
+      return;
+    
+    };
 
 		const h = layouts[activeLayoutIndex].aspectRatio[0];
 		const w = layouts[activeLayoutIndex].aspectRatio[1];
@@ -447,24 +459,11 @@ const Home: NextPage = () => {
 		});
 	}
 
-	function getTotalHeight() {
-		if (!data?.selectedLayout) return;
-		const height = Object.values(layouts[activeLayoutIndex].printLayout)
-			.map((x: number) => Object.values(x)[0]?.height)
-			.reduce((prev, cur) => prev + cur);
-		return height;
-	}
-	function getTotalWidth() {
-		if (!data?.selectedLayout) return;
-		const width = Object.values(layouts[activeLayoutIndex].printLayout)
-			.map((x: number) => Object.values(x))[1]
-			.map((x) => x.width)
-			.reduce((prev, cur) => prev + cur);
-		return width;
-	}
+
+
 
 	return (
-		<div className="flex flex-col bg-base-100 h-screen" data-theme={theme}>
+		<div className="flex flex-col bg-base-100 h-screen" data-theme={data?.theme || 'lofi'}>
 			<ToastContainer
 				hideProgressBar
 				theme="dark"
@@ -530,7 +529,7 @@ const Home: NextPage = () => {
 					content="https://og-image.vercel.app/ID%20Picture%20Print%20Layout%20Generator%20Tool%20by%20%40andreitrinidad.png?theme=dark&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-white-logo.svg&images=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fremojansen%2Flogo.ts%40master%2Fts.svg"
 				/>
 			</Head>
-			<AppHeader setTheme={setTheme} print={printPreview} />
+			<AppHeader print={printPreview} />
 
 			<section className="flex flex-1 p-8 gap-10 bg-base-100 overflow-scroll">
 				<LayoutSelector />
@@ -590,7 +589,7 @@ const Home: NextPage = () => {
 					{/* PREVIEW */}
 					<div className="inline-flex">
 						<div className="flex flex-col">
-							<div className="divider">{getTotalWidth()} in</div>
+							<div className="divider">{width} in</div>
 							<LayoutPreview
 								imagePreviewSrc={imagePreviewSrc}
 								bgColor={data?.bgColor}
@@ -601,7 +600,7 @@ const Home: NextPage = () => {
 						</div>
 						<div className="divider divider-horizontal border-base-content pt-12">
 							<span className="[writing-mode:vertical-lr] rotate-180">
-								{getTotalHeight()} in
+								{height} in
 							</span>
 						</div>
 					</div>
