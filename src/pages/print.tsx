@@ -1,19 +1,14 @@
 import type { NextPage } from 'next';
 import * as Icon from 'react-feather';
 import Link from 'next/link';
-import LayoutPreview from '../components/LayoutPreview';
 import { useImageContext } from '../contexts/ImageContext';
 import { useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import Image from 'next/image';
-import layouts from '../layouts';
 import useImageDimensions from '../hooks/useImageDimensions';
 import { useRouter } from 'next/router';
-// @ts-ignore: Unreachable code error
-import { localStorage } from 'browser-monads';
 
 const PrintPreview: NextPage = () => {
-	const { data, setData } = useImageContext();
+	const { data } = useImageContext();
 	const printRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 	const { height, width } = useImageDimensions();
@@ -28,7 +23,10 @@ const PrintPreview: NextPage = () => {
 		content: () => printRef.current,
 	});
 
-  const image = localStorage.getItem('image') || '';
+  let image = '';
+  if (typeof window !== 'undefined') {
+     image = localStorage.getItem('image');
+  }
 
 	useEffect(() => {
     if (image === '') {
