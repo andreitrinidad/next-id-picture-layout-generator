@@ -1,24 +1,33 @@
 import classNames from 'classnames';
 import React from 'react';
 import * as Icon from 'react-feather';
+import { useImageContext } from '../contexts/ImageContext';
 import layouts from '../layouts';
 
-interface ILayoutSelectorProps {
-	selectedLayout: string;
-	setSelectedLayout: (layout: string) => void;
-}
 
-export const LayoutSelector: React.FC<ILayoutSelectorProps> = (props) => {
-	const { selectedLayout, setSelectedLayout } = props;
+
+export const LayoutSelector: React.FC = () => {
+	// const { selectedLayout, setSelectedLayout } = props;
+	const { data, setData } = useImageContext();
+
+  function setSelectedLayout(layout: string) {
+    setData((prevState: any) => {
+      const newData = {...prevState};
+      newData.selectedLayout = layout
+      return newData;
+    });
+  }
+
+
 	return (
 		<div className="border-r-2 min-w-[300px]">
 			<h2 className="text-lg font-semibold mb-4">
-				<span className="text-secondary font-bold">00</span> Select
+				<span className="text-primary font-bold">00</span> Select
 				Layout
 			</h2>
 			<ul className="menu">
 				{Object.values(layouts).map((layout, i) => {
-					const active = layout.name == selectedLayout;
+					const active = layout.name == data?.selectedLayout;
 
 					return (
 						<li key={i}>

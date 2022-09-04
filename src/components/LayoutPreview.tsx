@@ -6,11 +6,11 @@ import layouts from '../layouts';
 import { useDebounce } from '../useDebounce';
 
 interface ILayoutPreviewProps {
-	imagePreviewSrc: string;
-	bgColor: string;
-	borderColor: string;
+	imagePreviewSrc?: string;
+	bgColor?: string;
+	borderColor?: string;
 	ppi?: number;
-  selectedLayout: string;
+  selectedLayout?: string;
 }
 
 interface ILayoutObject {

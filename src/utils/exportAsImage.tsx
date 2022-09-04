@@ -55,21 +55,21 @@ export const copyImage = async (element: HTMLDivElement|null, ppi: number = 220,
   .catch(function (error) {
     console.error('oops, something went wrong!', error);
   });
-  // const canvas = await html2canvas(element);
-	// const image = canvas.toDataURL('image/png', 1.0);
-  // const image150 = changeDpiDataUrl(image, ppi); //hard coded 
-  // const blob = await (await fetch(image150)).blob(); 
-  // try {
-  //   navigator.clipboard.write([
-  //     new ClipboardItem({
-  //       [blob.type]: blob
-  //     })
-  //   ]);
-  //   callback();
-  // } catch (error) {
-  //   alert('unsupported browser!')
-  // }
+};
 
+export const printImage = async (element: HTMLDivElement|null, ppi: number = 220, callback: Function) => {
+	if (element == null) return;
+    htmlToImage.toPng(element)
+    .then(function (dataUrl) {
+
+        // const imageNewDpi = changeDpiDataUrl(dataUrl, ppi);
+        // console.log('imageNewDpi', imageNewDpi)
+        localStorage.setItem('image', dataUrl);
+        callback();
+    })
+    .catch(function (error) {
+      console.error('oops, something went wrong!', error);
+    });
 };
 
 const downloadImage = (blob: string, fileName: string) => {

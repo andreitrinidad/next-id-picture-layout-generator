@@ -1,35 +1,64 @@
 import Image from 'next/image';
-import React from 'react';
+import Link from 'next/link';
+import React, { useEffect } from 'react';
 import * as Icon from 'react-feather';
+import { useImageContext } from '../contexts/ImageContext';
 
 interface IAppHeaderProps {
-	setTheme: Function;
+  print: Function;
 }
 
-export const AppHeader: React.FC<IAppHeaderProps> = ({ setTheme }) => {
+export const AppHeader: React.FC<IAppHeaderProps> = ({ print }) => {
+
+  const {data, setData} = useImageContext();
+
+  useEffect(() => {
+    function detectKeys(event: any) {
+			if ((event.ctrlKey || event.metaKey) && event.keyCode == 80) {
+				event.preventDefault();
+				print();
+			}
+		}
+
+		window.addEventListener('keydown', detectKeys);
+
+		return () => {
+			window.removeEventListener('keydown', detectKeys);
+		};
+
+  }, [])
+
 	return (
-		<header className="flex bg-primary px-8 items-center justify-between gap-6">
-			<a href="https://www.facebook.com/portalngprint" className="relative h-[90px] w-[90px]">
+		<header className="flex bg-primary px-8 pr-0 items-center justify-between gap-6">
+			<a href="https://www.facebook.com/portalngprint" className="relative  w-[70px] self-end">
 				<Image
 					src="/paprintngapo.png"
-					layout="fill"
-					height={90}
-					width={90}
+					layout="responsive"
+					height={504}
+					width={650}
           alt="Paprint Nga Po"
 				/>
 			</a>
-			<h1 className="text-primary-content text-2xl font-bold flex-1">
+			<h1 className="text-primary-content text-xl font-semibold flex-1">
 				ID Picture Print Layout Generator Tool
 			</h1>
 			{/* header */}
 			<div className="flex items-center gap-2">
-				<div className="dropdown dropdown-left ">
-					<label tabIndex={0} className="btn btn-accent m-1 gap-2">
-						<Icon.Droplet /> theme
+      
+					<button
+						className="btn btn-secondary gap-2 m-2"
+            onClick={() => print()}
+					>
+						<Icon.FileText />
+            Print Preview
+					</button>
+				<div className="dropdown dropdown-center dropdown-top fixed bottom-1 left-1  ">
+					<label tabIndex={0} className="btn btn-sm btn-accent shadow-lg m-1 gap-2">
+						<Icon.Droplet size={20} /> theme
 					</label>
 					<ul
 						tabIndex={0}
-						className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 max-h-72 overflow-y-auto"
+						className="border-primary border dropdown-content menu p-2 shadow-xl bg-base-100 rounded-box w-52 max-h-72 overflow-y-auto"
 					>
 						<div className="text-center py-2"> Choose a theme:</div>
 
@@ -39,8 +68,13 @@ export const AppHeader: React.FC<IAppHeaderProps> = ({ setTheme }) => {
 								<li
 									key={i}
 									onClick={() => {
-										setTheme(val);
+										// setTheme(val);
 										localStorage.setItem('theme', val);
+                    setData((prevState: any) => {
+                      const newData = { ...prevState };
+                      newData.theme = val;
+                      return newData;
+                    });
 									}}
 								>
 									<a>{val}</a>
@@ -50,7 +84,7 @@ export const AppHeader: React.FC<IAppHeaderProps> = ({ setTheme }) => {
 						{/* <li><a>Item 2</a></li> */}
 					</ul>
 				</div>
-				<div
+				{/* <div
 					className="tooltip tooltip-left"
 					data-tip="Built with⚡by andrei 🔥. See source code on Github"
 				>
@@ -62,7 +96,7 @@ export const AppHeader: React.FC<IAppHeaderProps> = ({ setTheme }) => {
 					>
 						<Icon.GitHub />
 					</a>
-				</div>
+				</div> */}
 			</div>
 		</header>
 	);
