@@ -92,14 +92,21 @@ const PrintPreview: NextPage = () => {
 							width: `${paperSize.width}in`,
 						}}
 					>
+            <div style={{
+              			height: `${height}in`,
+								width: `${width}in`,
+            }}>
+
 						<img
 							style={{
-								height: `${height}in`,
-								width: `${width}in`,
+								// height: `${height}in`,
+								// width: `${width}in`,
 								margin: `${paperSize.margin}in`,
 							}}
 							src={image}
 						/>
+            </div>
+
 					</div>
 				</div>
 
@@ -180,6 +187,11 @@ const PrintPreview: NextPage = () => {
 						/>
             in
 					</div>
+
+          <div className="flex gap-2 justify-between mt-8">
+						<h3 className="font-bold">Presets</h3>
+					</div>
+          <div className="divider m-0"></div>
          
 				</div>
 			</main>

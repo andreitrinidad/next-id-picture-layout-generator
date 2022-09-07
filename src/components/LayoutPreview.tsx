@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import React from 'react';
 import { useImageContext } from '../contexts/ImageContext';
+import useImageDimensions from '../hooks/useImageDimensions';
 import layouts from '../layouts';
 import { useDebounce } from '../useDebounce';
 
@@ -28,6 +29,7 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 	({ imagePreviewSrc, bgColor, borderColor, ppi = 220, selectedLayout }, ref) => {
 
     const {data} = useImageContext();
+    const {height, width} = useImageDimensions();
     const debouncedData = useDebounce(data, 100);
 
 		// in here we assume the 1 unit is 1 inches
@@ -37,27 +39,31 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 
 		const renderColumn = (col: { height: number, width: number}, i: number) => {
 			return (
-				<div
-					className="relative border"
+				<td
+          colSpan={col.width}
+					className="relative border-2"
 					style={{
-						borderColor: borderColor,
+            borderColor: borderColor,
 						height: unitToPixel(col.height, ppi),
 						width: unitToPixel(col.width, ppi),
             filter:  `brightness(${debouncedData?.brightness}%) contrast(${data?.contrast}%) saturate(${data?.saturation}%)`
 					}}
 				>
-					{imagePreviewSrc && (
+          <div className='h-full w-full'>
+          {imagePreviewSrc && (
 						<Image layout="fill" src={imagePreviewSrc} alt="" />
 					)}
-				</div>
+          </div>
+				
+				</td>
 			);
 		};
 
 		const renderRow = (row: object, i: number) => {
 			return (
-				<div className="flex" key={i}>
+				<tr key={i}>
 					{Object.values(row).map((col, i) => renderColumn(col, i))}
-				</div>
+				</tr>
 			);
 		};
 
@@ -75,11 +81,20 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 
 		return (
 			<div
-				style={{ background: bgColor}}
-				className="inline-block"
+				className="inline-block border-r-2 "
+        style={{
+          background: bgColor,
+          borderColor: borderColor,
+          width: width * ppi + 'px'}}
 				ref={ref}
 			>
-				{renderLayout(layouts[activeLayoutIndex < 0 ? 0 : activeLayoutIndex])}
+        <table className='table-auto border-2 border-collapse' style={{
+          borderColor: borderColor,
+          width: width * ppi + 'px'}}>
+        <tbody>
+        {renderLayout(layouts[activeLayoutIndex < 0 ? 0 : activeLayoutIndex])}
+        </tbody>
+        </table>
 			</div>
 		);
 	}
