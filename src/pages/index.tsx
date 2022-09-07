@@ -61,9 +61,6 @@ const Home: NextPage = () => {
 	const [scale, setScale] = useState(1);
 	const [rotate, setRotate] = useState(0);
 	const [aspect, setAspect] = useState<number | undefined>(1 / 1);
-	// const [imagePreviewSrc, setImagePreviewSrc] = useState('');
-	const [bgColor, setBgColor] = useState('#FFF');
-	const [borderColor, setBorderColor] = useState('#000');
 	const [pixelDensityCopy, setPixelDensityCopy] = useState(220);
 	const [pixelDensityDL, setPixelDensityDL] = useState(220);
 	const previewRef = useRef<HTMLDivElement>(null);
@@ -77,6 +74,8 @@ const Home: NextPage = () => {
 	// const { imagePreviewSrc = '' } = data;
 	const imagePreviewSrc = data?.imagePreviewSrc;
 	const selectedLayout = data?.selectedLayout;
+	const bgColor = data?.bgColor;
+	const borderColor = data?.borderColor;
 
 	function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 		if (e.target.files && e.target.files.length > 0) {
@@ -623,9 +622,13 @@ const Home: NextPage = () => {
 								<p>Pick Color</p>
 								<HexColorPicker
 									color={bgColor}
-									onChange={(color: string) =>
-										setBgColor(color)
-									}
+									onChange={(color: string) => {
+                    setData((prevState: any) => {
+                      const newData = { ...prevState };
+                      newData.bgColor = color;
+                      return newData;
+                    });
+									}}
 								/>
 								<p>{bgColor}</p>
 							</div>
@@ -636,9 +639,13 @@ const Home: NextPage = () => {
 								<p>Pick Color</p>
 								<HexColorPicker
 									color={borderColor}
-									onChange={(color: string) =>
-										setBorderColor(color)
-									}
+                  onChange={(color: string) => {
+                    setData((prevState: any) => {
+                      const newData = { ...prevState };
+                      newData.borderColor = color;
+                      return newData;
+                    });
+									}}
 								/>
 								<p>{bgColor}</p>
 							</div>

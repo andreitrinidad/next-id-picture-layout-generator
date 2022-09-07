@@ -59,7 +59,7 @@ const PrintPreview: NextPage = () => {
 	return (
 		<div
 			data-theme={data?.theme || 'lofi'}
-			className="flex flex-col bg-base-100 min-h-screen"
+			className="flex flex-col h-screen min-h-screen"
 		>
 			<header className="flex bg-primary px-8 pr-0 items-center justify-between gap-6">
 				<Link href="/">
@@ -81,9 +81,9 @@ const PrintPreview: NextPage = () => {
 					</button>
 				</div>
 			</header>
-			<main className="flex">
+			<main className="flex h-full border border-2">
 				{/* preview */}
-				<div className="flex flex-1 justify-center p-8">
+				<div className="flex flex-1 justify-center p-8 bg-base-200 h-full">
 					<div
 						ref={printRef}
 						className=" bg-white overflow-hidden shadow-[0px_10px_60px_-15px_rgba(0,0,0,0.3)] print:bg-white print:shadow-none"
@@ -103,7 +103,7 @@ const PrintPreview: NextPage = () => {
 					</div>
 				</div>
 
-				<div className="max-w-[300px] min-w-[300px] p-8 bg-base-200 h-screen">
+				<div className="max-w-[300px] min-w-[300px] p-8 bg-white h-full">
 					<div className="flex justify-between items-center mb-4">
 						<h2 className="text-lg font-semibold">
 							{/* <span className="text-primary font-bold">03</span>{' '} */}
