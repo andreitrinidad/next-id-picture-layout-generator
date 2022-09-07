@@ -725,11 +725,14 @@ const Home: NextPage = () => {
 						<button
 							className="btn btn-xs btn-ghost"
 							onClick={() => {
-								setData({
-									brightness: 100,
-									contrast: 100,
-									saturation: 100,
-								});
+		
+                setData((prevState: any) => {
+                  const newData = { ...prevState };
+                  newData.brightness = 100;
+                  newData.contrast = 100;
+                  newData.saturation = 100;
+                  return newData;
+                });
 							}}
 						>
 							RESET

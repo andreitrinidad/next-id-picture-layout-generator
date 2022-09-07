@@ -26,6 +26,12 @@ const PrintPreview: NextPage = () => {
 
 	const handlePrint = useReactToPrint({
 		content: () => printRef.current,
+    pageStyle: `
+    @page {
+      size: ${paperSize.width}in ${paperSize.height}in;
+      margin: 0;
+    }
+    `
 	});
 
   const image = localStorage.getItem('image') || '';
