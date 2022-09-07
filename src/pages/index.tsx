@@ -557,7 +557,7 @@ const Home: NextPage = () => {
 
 					{renderControls()}
 				</div>
-				<div className="flex-1">
+				<div className="flex-1 min-w-[450px]">
 					<h2 className="text-lg font-semibold mb-4">
 						<span className="text-primary font-bold">02</span>{' '}
 						Preview and Save

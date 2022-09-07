@@ -109,7 +109,7 @@
 	},
   {
 		"name": "Package D (PHP 15.00)",
-    "description": "8pcs 1x1 only",
+    "description": "4pcs 1x1 only",
 		"aspectRatio": [1, 1],
 		"printLayout": {
 
@@ -122,14 +122,7 @@
 					"height": 1,
 					"width": 1
 				},
-        "col3": {
-					"height": 1,
-					"width": 1
-				},
-				"col4": {
-					"height": 1,
-					"width": 1
-				},
+
 			},
 			"row2": {
 				"col1": {
@@ -140,14 +133,7 @@
 					"height": 1,
 					"width": 1
 				},
-        "col3": {
-					"height": 1,
-					"width": 1
-				},
-				"col4": {
-					"height": 1,
-					"width": 1
-				},
+
 			},
 		}
 	},
