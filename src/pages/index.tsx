@@ -647,7 +647,7 @@ const Home: NextPage = () => {
                     });
 									}}
 								/>
-								<p>{bgColor}</p>
+								<p>{borderColor}</p>
 							</div>
 						</a>
 					</div>
