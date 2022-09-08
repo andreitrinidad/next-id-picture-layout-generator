@@ -2,12 +2,33 @@ import React from 'react';
 import { HexColorPicker } from 'react-colorful';
 import { useImageContext } from '../contexts/ImageContext';
 import ColorButton from './ColorButton';
+import * as Icon from 'react-feather';
+
 
 export default function Adjustments() {
 	const { data, setData } = useImageContext();
 	return (
-		<div className="flex-1 max-w-[300px] min-w-[300px]">
+		<div className="
+    flex flex-col p-6 group
+    border-l-2 min-w-[300px] max-w-[300px]
+    h-full bg-base-100 z-10 shadow-md 
+    hover:translate-x-0 hover:shadow-black hover:shadow-2xl
+    fixed top-[64px] right-0 translate-x-[290px] 
+    2xl:relative 2xl:p-0 2xl:top-0 2xl:h-full
+    2xl:translate-x-0 2xl:shadow-none 2xl:pl-6 2xl:hover:shadow-none
+    transition-all ease-in-out
+    ">
 			<div className="flex justify-between items-center mb-4">
+      <div className="2xl:hidden tabs  font-semibold absolute -rotate-90 left-[-125px] top-1/3">
+      <a className="tab tab-active flex gap-2 tab-lifted bg-base-100 tab-lg">
+        03 Adjustments
+        <div className="rotate-0 group-hover:rotate-180 transition-transform duration-500 delay-200">
+
+        <Icon.ChevronUp size={20}/>
+        </div>
+        {/* <Icon.ChevronUp className='mr-2' size={20}/> */}
+        </a> 
+    </div>
 				<h2 className="text-lg font-semibold">
 					<span className="text-primary font-bold">03</span>{' '}
 					Adjustments
@@ -28,7 +49,7 @@ export default function Adjustments() {
 				</button>
 			</div>
 
-			<div className="">
+			<div className="h-full overflow-y-scroll">
 				<label className="block uppercase font-bold text-sm mb-4">
 					Brightness:{' '}
 					<span className="badge badge-primary badge-outline">

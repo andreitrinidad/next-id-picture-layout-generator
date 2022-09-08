@@ -21,8 +21,8 @@ const PrintPreview: NextPage = () => {
 	});
 	const ppi = 220;
 
-  let height = paperSize.isLandscape ? _width: _height;
-  let width = paperSize.isLandscape ? _height: _width;
+	let height = paperSize.isLandscape ? _width : _height;
+	let width = paperSize.isLandscape ? _height : _width;
 
 	const handlePrint = useReactToPrint({
 		content: () => printRef.current,
@@ -32,6 +32,9 @@ const PrintPreview: NextPage = () => {
       margin: 0;
     }
     `,
+		onAfterPrint() {
+			router.back();
+		},
 	});
 
 	let image = '';
@@ -61,11 +64,30 @@ const PrintPreview: NextPage = () => {
 		};
 	}, []);
 
+  const isClipped = paperSize.width < width || paperSize.height < height; 
+
 	return (
 		<div
 			data-theme={data?.theme || 'lofi'}
 			className="flex flex-col h-screen min-h-screen"
 		>
+      {
+        isClipped && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-10 w-[500px] alert alert-warning shadow-lg">
+          <div>
+            <Icon.AlertTriangle/>
+            <span>Clipping may occur. Check your paper size height and width</span>
+          </div>
+          {/* <div className="flex-none">
+      <button className="btn btn-sm btn-ghost">Deny</button>
+      <button className="btn btn-sm btn-primary" disabled>Auto-fix</button>
+    </div> */}
+        </div>
+        )
+      }
+        
+
+
 			<header className="flex bg-primary px-8 pr-0 items-center justify-between gap-6">
 				<Link href="/">
 					<a className="btn btn-circle btn-secondary">
@@ -86,11 +108,12 @@ const PrintPreview: NextPage = () => {
 					</button>
 				</div>
 			</header>
-			<main className="flex h-full border border-2">
+
+			<main className="flex h-full relative">
 				{/* preview */}
 				<div className="flex flex-1 flex-col justify-start items-center p-8 bg-base-200 h-full">
-        <div className="tooltip" data-tip="Orientation">
-					{/* <button className={
+					<div className="tooltip" data-tip="Orientation">
+						{/* <button className={
             classNames("btn btn-square", 
               !paperSize.isLandscape && 'btn-outline'
             )
@@ -103,8 +126,10 @@ const PrintPreview: NextPage = () => {
           }}>
 						<Icon.RotateCw/>
 					</button> */}
-          </div>
-					<span className="badge badge-lg badge-neutral mb-4">
+					</div>
+
+       
+					<span className="badge badge-lg px-4 badge-neutral mb-4">
 						Paper Size: {paperSize.width} x {paperSize.height}
 					</span>
 					{/* <span className="badge badge-lg badge-neutral mb-4">
@@ -119,31 +144,30 @@ const PrintPreview: NextPage = () => {
 						}}
 					>
 						<div
-            // className="border-8 border-red-600 "
+							// className="border-8 border-red-600 "
 
 							style={{
 								height: `${height}in`,
 								width: `${width}in`,
-                margin: `${paperSize.margin}in`,
+								margin: `${paperSize.margin}in`,
 							}}
 						>
 							<img
-              className={classNames(
-                paperSize.isLandscape &&
-                  'rotate-90',
-                  //  'border-8 border-red-500 object-contain'
-              )}
-              // style={{
-							// 	height: `${height}in`,
-							// 	width: `${width}in`,
-              //   margin: `${paperSize.margin}in`,
-							// }}
+								className={classNames(
+									paperSize.isLandscape && 'rotate-90'
+									//  'border-8 border-red-500 object-contain'
+								)}
+								// style={{
+								// 	height: `${height}in`,
+								// 	width: `${width}in`,
+								//   margin: `${paperSize.margin}in`,
+								// }}
 								// className='object-cover'
 								// className={classNames(
-                //   paperSize.isLandscape &&
-                //     'rotate-180',
-                //      'border-8 border-red-500'
-                // )}
+								//   paperSize.isLandscape &&
+								//     'rotate-180',
+								//      'border-8 border-red-500'
+								// )}
 								src={image}
 							/>
 						</div>

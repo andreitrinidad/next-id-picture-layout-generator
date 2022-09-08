@@ -30,6 +30,7 @@ import { useImageContext } from '../contexts/ImageContext';
 import { useRouter } from 'next/router';
 import useImageDimensions from '../hooks/useImageDimensions';
 import Adjustments from '../components/Adjustments';
+import Meta from '../components/Meta';
 
 function centerAspectCrop(
 	mediaWidth: number,
@@ -52,16 +53,12 @@ function centerAspectCrop(
 }
 
 const Home: NextPage = () => {
-	const [imgSrc, setImgSrc] = useState('');
-	const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 	const imgRef = useRef<HTMLImageElement>(null);
 	const reactCropRef = useRef(null);
 	const router = useRouter();
-	const [crop, setCrop] = useState<Crop>();
-	const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
-	const [scale, setScale] = useState(1);
-	const [rotate, setRotate] = useState(0);
-	const [aspect, setAspect] = useState<number | undefined>(1 / 1);
+	// const [scale, setScale] = useState(1);
+	// const [rotate, setRotate] = useState(0);
 	const [pixelDensityCopy, setPixelDensityCopy] = useState(220);
 	const [pixelDensityDL, setPixelDensityDL] = useState(220);
 	const previewRef = useRef<HTMLDivElement>(null);
@@ -75,15 +72,31 @@ const Home: NextPage = () => {
 	// const { imagePreviewSrc = '' } = data;
 	const imagePreviewSrc = data?.imagePreviewSrc;
 	const selectedLayout = data?.selectedLayout;
-	const bgColor = data?.bgColor;
-	const borderColor = data?.borderColor;
+	const imgSrc = data?.imgSrc;
+	const crop = data?.crop;
+	const completedCrop = data?.completedCrop;
+	const scale = data?.scale;
+	const rotate = data?.rotate;
+	const aspect = data?.aspect;
+
+	// const bgColor = data?.bgColor;
+	// const borderColor = data?.borderColor;
 
 	function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 		if (e.target.files && e.target.files.length > 0) {
-			setCrop(undefined); // Makes crop preview update between images.
+			 // Makes crop preview update between images.
+      setData((prevState: any) => {
+        const newData = { ...prevState };
+        newData.crop = undefined;
+        return newData;
+      });
 			const reader = new FileReader();
 			reader.addEventListener('load', () =>
-				setImgSrc(reader?.result?.toString() || '')
+        setData((prevState: any) => {
+          const newData = { ...prevState };
+          newData.imgSrc = reader?.result?.toString() || '';
+          return newData;
+        })
 			);
 			reader.readAsDataURL(e.target.files[0]);
 		}
@@ -92,7 +105,11 @@ const Home: NextPage = () => {
 	function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
 		if (aspect) {
 			const { width, height } = e.currentTarget;
-			setCrop(centerAspectCrop(width, height, aspect));
+      setData((prevState: any) => {
+        const newData = { ...prevState };
+        newData.crop = centerAspectCrop(width, height, aspect);
+        return newData;
+      });
 		}
 	}
 
@@ -115,9 +132,13 @@ const Home: NextPage = () => {
 					return;
 				}
 				const blob = await item.getType('image/png');
-				setCrop(undefined);
 				const src = URL.createObjectURL(blob);
-				setImgSrc(`${src}`);
+        setData((prevState: any) => {
+          const newData = { ...prevState };
+          newData.imgSrc = `${src}`;
+          newData.crop = undefined;
+          return newData;
+        });
 			}
 		} catch (error) {
 			console.log(error);
@@ -167,15 +188,23 @@ const Home: NextPage = () => {
 
 	function setCropAndAspect() {
 		if (aspect) {
-			setAspect(undefined);
+      setData((prevState: any) => {
+        const newData = { ...prevState };
+        newData.aspect = undefined;
+        return newData;
+      });
 		} else if (imgRef.current) {
 			const { width, height } = imgRef.current;
 			const activeLayoutIndex =
 				layouts.findIndex((x) => x.name == selectedLayout) || 0;
 			const h = layouts[activeLayoutIndex].aspectRatio[0];
 			const w = layouts[activeLayoutIndex].aspectRatio[1];
-			setAspect(h / w);
-			setCrop(centerAspectCrop(width, height, 1 / 1));
+      setData((prevState: any) => {
+        const newData = { ...prevState };
+        newData.aspect = h / w;
+        newData.crop = centerAspectCrop(width, height, 1 / 1);
+        return newData;
+      });
 			// generatePreviewImage()
 		}
 	}
@@ -198,10 +227,18 @@ const Home: NextPage = () => {
 								ref={reactCropRef}
 								crop={crop}
 								onChange={(_, percentCrop) => {
-									setCrop(percentCrop);
+                  setData((prevState: any) => {
+                    const newData = { ...prevState };
+                    newData.crop = percentCrop;
+                    return newData;
+                  });
 								}}
 								onComplete={(c) => {
-									setCompletedCrop(c);
+                  setData((prevState: any) => {
+                    const newData = { ...prevState };
+                    newData.completedCrop = c;
+                    return newData;
+                  });
 								}}
 								aspect={aspect}
 								ruleOfThirds
@@ -234,15 +271,17 @@ const Home: NextPage = () => {
 								value={rotate}
 								disabled={!imgSrc}
 								onChange={(e) =>
-									setRotate(
-										Math.min(
+                  setData((prevState: any) => {
+                    const newData = { ...prevState };
+                    newData.rotate = Math.min(
 											180,
 											Math.max(
 												-180,
 												Number(e.target.value)
 											)
-										)
-									)
+										);
+                    return newData;
+                  })
 								}
 								className="range range-xs"
 							/>
@@ -264,7 +303,14 @@ const Home: NextPage = () => {
 						<div className="input-group w-auto items-center">
 							<button
 								className="btn btn-square btn-sm"
-								onClick={() => setScale(scale - 0.1)}
+								onClick={() => {
+                  setData((prevState: any) => {
+                    const newData = { ...prevState };
+                    newData.scale = newData.scale - 0.1;
+                    return newData;
+                  });
+                
+                }}
 							>
 								<Icon.Minus size={18} />
 							</button>
@@ -274,15 +320,25 @@ const Home: NextPage = () => {
 								className="input input-bordered border-2 w-20 input-sm"
 								type="number"
 								step="0.1"
-								value={Math.round(scale * 10) / 10}
+								value={scale ? Math.round(scale * 10) / 10 : 1}
 								// disabled
 								onChange={(e) =>
-									setScale(Number(e.target.value))
+                  setData((prevState: any) => {
+                    const newData = { ...prevState };
+                    newData.scale = Number(e.target.value);
+                    return newData;
+                  })
 								}
 							/>
 							<button
 								className="btn btn-square btn-sm"
-								onClick={() => setScale(scale + 0.1)}
+								onClick={() => {
+                  setData((prevState: any) => {
+                    const newData = { ...prevState };
+                    newData.scale = newData.scale + 0.1;
+                    return newData;
+                  });
+                }}
 							>
 								<Icon.Plus size={18} />
 							</button>
@@ -296,7 +352,14 @@ const Home: NextPage = () => {
 						<div className="input-group w-auto items-center">
 							<button
 								className="btn btn-square btn-sm"
-								onClick={() => setRotate(rotate - 90)}
+								onClick={() => {
+                  // setRotate(rotate - 90)
+                  setData((prevState: any) => {
+                    const newData = { ...prevState };
+                    newData.rotate = newData.rotate - 90
+                    return newData;
+                  })
+                }}
 							>
 								<Icon.RotateCcw size={15} />
 							</button>
@@ -308,13 +371,24 @@ const Home: NextPage = () => {
 								// step="0.1"
 								value={rotate}
 								// disabled
-								onChange={(e) =>
-									setRotate(Number(e.target.value))
+								onChange={(e) => {
+                  setData((prevState: any) => {
+                    const newData = { ...prevState };
+                    newData.rotate = e.target.value;
+                    return newData;
+                  })
+                }
 								}
 							/>
 							<button
 								className="btn btn-square btn-sm"
-								onClick={() => setRotate(rotate + 90)}
+								onClick={() => {
+                  setData((prevState: any) => {
+                    const newData = { ...prevState };
+                    newData.rotate = newData.rotate + 90
+                    return newData;
+                  })
+                }}
 							>
 								<Icon.RotateCw size={15} />
 							</button>
@@ -433,28 +507,40 @@ const Home: NextPage = () => {
     
     };
 
+    // changes the aspect ratio I guess
 		const h = layouts[activeLayoutIndex].aspectRatio[0];
 		const w = layouts[activeLayoutIndex].aspectRatio[1];
 		if (imgRef.current) {
-			setAspect(h / w);
-			setCrop(undefined);
+      setData((prevState: any) => {
+        const newData = { ...prevState };
+        newData.crop = undefined;
+        newData.aspect = h / w;
+        return newData;
+      });
 			const _imgSrc = imgSrc;
 			removeImage();
 			window.setTimeout(() => {
-				setImgSrc(_imgSrc);
+        setData((prevState: any) => {
+          const newData = { ...prevState };
+          newData.imgSrc = _imgSrc;
+          return newData;
+        });
 			}, 100);
 		} else {
-			setAspect(h / w);
+      setData((prevState: any) => {
+        const newData = { ...prevState };
+        newData.aspect = h / w;
+        return newData;
+      });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeLayoutIndex, selectedLayout]);
 
 	function removeImage() {
-		setImgSrc('');
-		// setImagePreviewSrc('');
 		setData((prevState: any) => {
 			const newData = { ...prevState };
 			newData.imagePreviewSrc = '';
+      newData.imgSrc = '';
 			return newData;
 		});
 	}
@@ -470,68 +556,10 @@ const Home: NextPage = () => {
 				autoClose={1500}
 				position="bottom-right"
 			/>
-			<Head>
-				{/* <title>ID Picture Print Layout Generator Tool</title> */}
-				<link
-					rel="icon"
-					href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌄</text></svg>"
-				/>
-				<meta
-					property="og:image"
-					content="https://og-image.vercel.app/ID%20Picture%20Print%20Layout%20Generator%20Tool%20by%20%40andreitrinidad.png?theme=dark&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-white-logo.svg&images=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fremojansen%2Flogo.ts%40master%2Fts.svg"
-				/>
-				{/* <!-- Primary Meta Tags --> */}
-				<title>
-					IDPPLG (ID Picture Print Layout Generator) Tool - by Andrei
-					Trinidad
-				</title>
-				<meta
-					name="title"
-					content="IDPPLG (ID Picture Print Layout Generator) Tool - by Andrei Trinidad"
-				/>
-				<meta
-					name="description"
-					content="Create ID picture print layouts by simply copying and pasting your image."
-				/>
-
-				{/* <!-- Open Graph / Facebook --> */}
-				<meta property="og:type" content="website" />
-				<meta property="og:url" content="https://idpplg.vercel.app/" />
-				<meta
-					property="og:title"
-					content="IDPPLG (ID Picture Print Layout Generator) Tool - by Andrei Trinidad"
-				/>
-				<meta
-					property="og:description"
-					content="Create ID picture print layouts by simply copying and pasting your image."
-				/>
-				<meta
-					property="og:image"
-					content="https://og-image.vercel.app/ID%20Picture%20Print%20Layout%20Generator%20Tool%20by%20%40andreitrinidad.png?theme=dark&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-white-logo.svg&images=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fremojansen%2Flogo.ts%40master%2Fts.svg"
-				/>
-
-				{/* <!-- Twitter --> */}
-				<meta property="twitter:card" content="summary_large_image" />
-				<meta
-					property="twitter:url"
-					content="https://idpplg.vercel.app/"
-				/>
-				<meta
-					property="twitter:title"
-					content="IDPPLG (ID Picture Print Layout Generator) Tool - by Andrei Trinidad"
-				/>
-				<meta
-					property="twitter:description"
-					content="Create ID picture print layouts by simply copying and pasting your image."
-				/>
-				<meta
-					property="twitter:image"
-					content="https://og-image.vercel.app/ID%20Picture%20Print%20Layout%20Generator%20Tool%20by%20%40andreitrinidad.png?theme=dark&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-white-logo.svg&images=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fremojansen%2Flogo.ts%40master%2Fts.svg"
-				/>
-			</Head>
+			<Meta/>
 			<AppHeader print={printPreview} />
 
-			<section className="flex flex-1 p-8 gap-10 bg-base-100 overflow-scroll">
+			<section className="relative flex flex-1 p-8 gap-10 bg-base-100 overflow-scroll">
 				<LayoutSelector />
 				<div className="flex-1 max-w-xl min-w-[500px]">
 					<h2 className="text-lg font-semibold mb-4">

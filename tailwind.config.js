@@ -7,7 +7,11 @@ module.exports = {
     require('daisyui'),
   ],
   theme: {
-    extend: {},
+    extend: {
+      screens:  {
+        '2xl': '1760px'
+      },
+    } 
   },
   daisyui: {
     themes: ["light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"],

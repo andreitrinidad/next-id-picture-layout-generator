@@ -52,7 +52,7 @@ export const AppHeader: React.FC<IAppHeaderProps> = ({ print }) => {
 						<Icon.FileText />
             Print Preview
 					</button>
-				<div className="dropdown dropdown-center dropdown-top fixed bottom-1 left-1  ">
+				<div className="dropdown dropdown-center dropdown-top fixed bottom-1 left-1 z-20 ">
 					<label tabIndex={0} className="btn btn-sm btn-accent shadow-lg m-1 gap-2">
 						<Icon.Droplet size={20} /> theme
 					</label>

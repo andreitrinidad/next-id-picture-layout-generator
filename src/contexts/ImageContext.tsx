@@ -5,14 +5,24 @@ import React, {
 	useReducer,
 	useState,
 } from 'react';
+import { Crop, PixelCrop } from 'react-image-crop';
 
 interface IDataProps {
+  // image related
+  imgSrc: string,
+  crop: Crop | undefined,
+  completedCrop: PixelCrop | undefined,
+  scale: number,
+  rotate: number,
+  aspect: number | undefined,
+	imagePreviewSrc: string;
+  // adjustments
 	brightness: number;
 	contrast: number;
 	saturation: number;
-	imagePreviewSrc: string;
 	bgColor: string;
 	borderColor: string;
+  // global
 	theme: string;
 	selectedLayout: string;
 }
@@ -28,6 +38,12 @@ const ImageContext = createContext<IImageContextProps>({
 
 const ImageContextProvider = (props: any) => {
 	const initialData: IDataProps = {
+    imgSrc: '',
+    crop: undefined,
+    completedCrop: undefined,
+    scale: 1,
+    rotate: 0,
+    aspect: 1 / 1,
 		brightness: 100,
 		contrast: 100,
 		saturation: 100,
