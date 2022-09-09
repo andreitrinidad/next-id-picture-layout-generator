@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import * as Icon from 'react-feather';
 import { useImageContext } from '../contexts/ImageContext';
@@ -11,6 +12,7 @@ interface IAppHeaderProps {
 export const AppHeader: React.FC<IAppHeaderProps> = ({ print }) => {
 
   const {data, setData} = useImageContext();
+  const router = useRouter();
 
   useEffect(() => {
     function detectKeys(event: any) {
@@ -44,15 +46,17 @@ export const AppHeader: React.FC<IAppHeaderProps> = ({ print }) => {
 			</h1>
 			{/* header */}
 			<div className="flex items-center gap-2">
-      
 					<button
 						className="btn btn-secondary gap-2 m-2"
-            onClick={() => print()}
+            onClick={() => {
+              print();
+              // router.push('/print');
+            }}
 					>
 						<Icon.FileText />
             Print Preview
 					</button>
-				<div className="dropdown dropdown-center dropdown-top fixed bottom-1 left-1 z-20 ">
+				<div className="dropdown dropdown-center dropdown-top fixed bottom-4 left-1 z-20 ">
 					<label tabIndex={0} className="btn btn-sm btn-accent shadow-lg m-1 gap-2">
 						<Icon.Droplet size={20} /> theme
 					</label>

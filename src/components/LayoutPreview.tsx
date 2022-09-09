@@ -41,9 +41,10 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 			return (
 				<td
           colSpan={col.width}
-					className="relative border-2"
+					className="relative"
 					style={{
             borderColor: borderColor,
+            borderWidth: unitToPixel(0.02, ppi),
 						height: unitToPixel(col.height, ppi),
 						width: unitToPixel(col.width, ppi),
             filter:  `brightness(${debouncedData?.brightness}%) contrast(${data?.contrast}%) saturate(${data?.saturation}%)`
@@ -84,11 +85,12 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 				className="inline-block border-r-2 "
         style={{
           background: bgColor,
-          borderColor: borderColor,
+          // borderColor: borderColor,
+          // borderRight: `solid ${unitToPixel(0.02, ppi)} borderColor`,
           width: width * ppi + 'px'}}
 				ref={ref}
 			>
-        <table className='table-auto border-2 border-collapse' style={{
+        <table className='table-auto border-collapse' style={{
           borderColor: borderColor,
           width: width * ppi + 'px'}}>
         <tbody>

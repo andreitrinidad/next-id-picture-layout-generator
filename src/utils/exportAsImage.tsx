@@ -57,14 +57,40 @@ export const copyImage = async (element: HTMLDivElement|null, ppi: number = 220,
   });
 };
 
-export const printImage = async (element: HTMLDivElement|null, ppi: number = 220, callback: Function) => {
+export const printImage = async (element: HTMLDivElement|null, height: number, width: number, callback: Function, temp?: boolean) => {
 	if (element == null) return;
     htmlToImage.toPng(element)
     .then(function (dataUrl) {
+      console.log(dataUrl);
 
-        // const imageNewDpi = changeDpiDataUrl(dataUrl, ppi);
-        // console.log('imageNewDpi', imageNewDpi)
-        localStorage.setItem('image', dataUrl);
+        const localImages = localStorage.getItem('images') || '[]';
+
+        let images = JSON.parse(localImages);
+
+        if (temp) {
+          const data = {
+            printLayout: dataUrl,
+            height,
+            width,
+            dateAdded: new Date()
+          }
+
+          localStorage.setItem('tempImage', JSON.stringify(data));
+        callback();
+
+          return;
+        }
+
+        images.push(
+          {
+            printLayout: dataUrl,
+            height,
+            width,
+            dateAdded: new Date()
+          }
+        )
+
+        localStorage.setItem('images', JSON.stringify(images));
         callback();
     })
     .catch(function (error) {

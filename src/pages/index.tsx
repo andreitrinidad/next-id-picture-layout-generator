@@ -435,12 +435,18 @@ const Home: NextPage = () => {
 		);
 	}
 
-	function printPreview() {
-		printImage(previewRef.current, pixelDensityCopy, () => {
-			toast.info('Generating print preview');
-      router.push('/print');
+	function saveImageLocally() {
+		printImage(previewRef.current, height, width, () => {
+			toast.info('Saved to images stash');
 		});
 	}
+
+  function print() {
+    printImage(previewRef.current, height, width, () => {
+			toast.info('Generating print preview');
+      router.push('/print');
+		}, true);
+  }
 
 	function downloadResult() {
 		exportAsImage(previewRef.current, 'image', pixelDensityDL, () =>
@@ -557,9 +563,9 @@ const Home: NextPage = () => {
 				position="bottom-right"
 			/>
 			<Meta/>
-			<AppHeader print={printPreview} />
+			<AppHeader print={print} />
 
-			<section className="relative flex flex-1 p-8 gap-10 bg-base-100 overflow-scroll">
+			<section className="relative flex flex-1 p-8 gap-10 bg-base-100 overflow-auto">
 				<LayoutSelector />
 				<div className="flex-1 max-w-xl min-w-[500px]">
 					<h2 className="text-lg font-semibold mb-4">
@@ -590,7 +596,34 @@ const Home: NextPage = () => {
 						<span className="text-primary font-bold">02</span>{' '}
 						Preview and Save
 					</h2>
-					<div className="flex gap-4 mb-4 flex-wrap">
+
+          <button
+							className="btn btn-primary gap-2 w-[415px]"
+							onClick={saveImageLocally}
+						>
+							Save to stash
+							<Icon.Save />
+          </button>
+					{/* PREVIEW */}
+					<div className="inline-flex">
+						<div className="flex flex-col">
+							<div className="divider">{width} in</div>
+							<LayoutPreview
+								imagePreviewSrc={imagePreviewSrc}
+								bgColor={data?.bgColor}
+								borderColor={data?.borderColor}
+								ppi={100}
+								selectedLayout={selectedLayout}
+							/>
+						</div>
+						<div className="divider divider-horizontal border-base-content pt-12">
+							<span className="[writing-mode:vertical-lr] rotate-180">
+								{height} in
+							</span>
+						</div>
+					</div>
+
+          <div className="flex gap-4 mt-4 flex-wrap">
 						<button
 							className="btn btn-primary gap-2"
 							onClick={downloadResult}
@@ -611,25 +644,6 @@ const Home: NextPage = () => {
 							<kbd className="kbd kbd-xs">CTRL</kbd> +{' '}
 							<kbd className="kbd kbd-xs">C</kbd> to copy result
 							to clipboard
-						</div>
-					</div>
-
-					{/* PREVIEW */}
-					<div className="inline-flex">
-						<div className="flex flex-col">
-							<div className="divider">{width} in</div>
-							<LayoutPreview
-								imagePreviewSrc={imagePreviewSrc}
-								bgColor={data?.bgColor}
-								borderColor={data?.borderColor}
-								ppi={100}
-								selectedLayout={selectedLayout}
-							/>
-						</div>
-						<div className="divider divider-horizontal border-base-content pt-12">
-							<span className="[writing-mode:vertical-lr] rotate-180">
-								{height} in
-							</span>
 						</div>
 					</div>
 					{/* ACTUAL SIZE - HIDDEN */}
