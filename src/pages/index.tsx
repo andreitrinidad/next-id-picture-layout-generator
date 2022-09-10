@@ -53,7 +53,7 @@ function centerAspectCrop(
 }
 
 const Home: NextPage = () => {
-  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+	const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 	const imgRef = useRef<HTMLImageElement>(null);
 	const reactCropRef = useRef(null);
 	const router = useRouter();
@@ -67,7 +67,7 @@ const Home: NextPage = () => {
 	const [confirmModal, setConfirmModal] = useState(false);
 	// const [selectedLayout, setSelectedLayout] = useState(layouts[0].name);
 	// image modifcation related states
-  const { height, width } = useImageDimensions();
+	const { height, width } = useImageDimensions();
 	const { data, setData } = useImageContext();
 	// const { imagePreviewSrc = '' } = data;
 	const imagePreviewSrc = data?.imagePreviewSrc;
@@ -84,19 +84,19 @@ const Home: NextPage = () => {
 
 	function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 		if (e.target.files && e.target.files.length > 0) {
-			 // Makes crop preview update between images.
-      setData((prevState: any) => {
-        const newData = { ...prevState };
-        newData.crop = undefined;
-        return newData;
-      });
+			// Makes crop preview update between images.
+			setData((prevState: any) => {
+				const newData = { ...prevState };
+				newData.crop = undefined;
+				return newData;
+			});
 			const reader = new FileReader();
 			reader.addEventListener('load', () =>
-        setData((prevState: any) => {
-          const newData = { ...prevState };
-          newData.imgSrc = reader?.result?.toString() || '';
-          return newData;
-        })
+				setData((prevState: any) => {
+					const newData = { ...prevState };
+					newData.imgSrc = reader?.result?.toString() || '';
+					return newData;
+				})
 			);
 			reader.readAsDataURL(e.target.files[0]);
 		}
@@ -105,11 +105,11 @@ const Home: NextPage = () => {
 	function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
 		if (aspect) {
 			const { width, height } = e.currentTarget;
-      setData((prevState: any) => {
-        const newData = { ...prevState };
-        newData.crop = centerAspectCrop(width, height, aspect);
-        return newData;
-      });
+			setData((prevState: any) => {
+				const newData = { ...prevState };
+				newData.crop = centerAspectCrop(width, height, aspect);
+				return newData;
+			});
 		}
 	}
 
@@ -133,12 +133,12 @@ const Home: NextPage = () => {
 				}
 				const blob = await item.getType('image/png');
 				const src = URL.createObjectURL(blob);
-        setData((prevState: any) => {
-          const newData = { ...prevState };
-          newData.imgSrc = `${src}`;
-          newData.crop = undefined;
-          return newData;
-        });
+				setData((prevState: any) => {
+					const newData = { ...prevState };
+					newData.imgSrc = `${src}`;
+					newData.crop = undefined;
+					return newData;
+				});
 			}
 		} catch (error) {
 			console.log(error);
@@ -188,23 +188,23 @@ const Home: NextPage = () => {
 
 	function setCropAndAspect() {
 		if (aspect) {
-      setData((prevState: any) => {
-        const newData = { ...prevState };
-        newData.aspect = undefined;
-        return newData;
-      });
+			setData((prevState: any) => {
+				const newData = { ...prevState };
+				newData.aspect = undefined;
+				return newData;
+			});
 		} else if (imgRef.current) {
 			const { width, height } = imgRef.current;
 			const activeLayoutIndex =
 				layouts.findIndex((x) => x.name == selectedLayout) || 0;
 			const h = layouts[activeLayoutIndex].aspectRatio[0];
 			const w = layouts[activeLayoutIndex].aspectRatio[1];
-      setData((prevState: any) => {
-        const newData = { ...prevState };
-        newData.aspect = h / w;
-        newData.crop = centerAspectCrop(width, height, 1 / 1);
-        return newData;
-      });
+			setData((prevState: any) => {
+				const newData = { ...prevState };
+				newData.aspect = h / w;
+				newData.crop = centerAspectCrop(width, height, 1 / 1);
+				return newData;
+			});
 			// generatePreviewImage()
 		}
 	}
@@ -227,18 +227,18 @@ const Home: NextPage = () => {
 								ref={reactCropRef}
 								crop={crop}
 								onChange={(_, percentCrop) => {
-                  setData((prevState: any) => {
-                    const newData = { ...prevState };
-                    newData.crop = percentCrop;
-                    return newData;
-                  });
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.crop = percentCrop;
+										return newData;
+									});
 								}}
 								onComplete={(c) => {
-                  setData((prevState: any) => {
-                    const newData = { ...prevState };
-                    newData.completedCrop = c;
-                    return newData;
-                  });
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.completedCrop = c;
+										return newData;
+									});
 								}}
 								aspect={aspect}
 								ruleOfThirds
@@ -271,17 +271,17 @@ const Home: NextPage = () => {
 								value={rotate}
 								disabled={!imgSrc}
 								onChange={(e) =>
-                  setData((prevState: any) => {
-                    const newData = { ...prevState };
-                    newData.rotate = Math.min(
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.rotate = Math.min(
 											180,
 											Math.max(
 												-180,
 												Number(e.target.value)
 											)
 										);
-                    return newData;
-                  })
+										return newData;
+									})
 								}
 								className="range range-xs"
 							/>
@@ -304,13 +304,12 @@ const Home: NextPage = () => {
 							<button
 								className="btn btn-square btn-sm"
 								onClick={() => {
-                  setData((prevState: any) => {
-                    const newData = { ...prevState };
-                    newData.scale = newData.scale - 0.1;
-                    return newData;
-                  });
-                
-                }}
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.scale = newData.scale - 0.1;
+										return newData;
+									});
+								}}
 							>
 								<Icon.Minus size={18} />
 							</button>
@@ -323,22 +322,22 @@ const Home: NextPage = () => {
 								value={scale ? Math.round(scale * 10) / 10 : 1}
 								// disabled
 								onChange={(e) =>
-                  setData((prevState: any) => {
-                    const newData = { ...prevState };
-                    newData.scale = Number(e.target.value);
-                    return newData;
-                  })
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.scale = Number(e.target.value);
+										return newData;
+									})
 								}
 							/>
 							<button
 								className="btn btn-square btn-sm"
 								onClick={() => {
-                  setData((prevState: any) => {
-                    const newData = { ...prevState };
-                    newData.scale = newData.scale + 0.1;
-                    return newData;
-                  });
-                }}
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.scale = newData.scale + 0.1;
+										return newData;
+									});
+								}}
 							>
 								<Icon.Plus size={18} />
 							</button>
@@ -353,13 +352,13 @@ const Home: NextPage = () => {
 							<button
 								className="btn btn-square btn-sm"
 								onClick={() => {
-                  // setRotate(rotate - 90)
-                  setData((prevState: any) => {
-                    const newData = { ...prevState };
-                    newData.rotate = newData.rotate - 90
-                    return newData;
-                  })
-                }}
+									// setRotate(rotate - 90)
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.rotate = newData.rotate - 90;
+										return newData;
+									});
+								}}
 							>
 								<Icon.RotateCcw size={15} />
 							</button>
@@ -372,23 +371,22 @@ const Home: NextPage = () => {
 								value={rotate}
 								// disabled
 								onChange={(e) => {
-                  setData((prevState: any) => {
-                    const newData = { ...prevState };
-                    newData.rotate = e.target.value;
-                    return newData;
-                  })
-                }
-								}
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.rotate = e.target.value;
+										return newData;
+									});
+								}}
 							/>
 							<button
 								className="btn btn-square btn-sm"
 								onClick={() => {
-                  setData((prevState: any) => {
-                    const newData = { ...prevState };
-                    newData.rotate = newData.rotate + 90
-                    return newData;
-                  })
-                }}
+									setData((prevState: any) => {
+										const newData = { ...prevState };
+										newData.rotate = newData.rotate + 90;
+										return newData;
+									});
+								}}
 							>
 								<Icon.RotateCw size={15} />
 							</button>
@@ -441,12 +439,18 @@ const Home: NextPage = () => {
 		});
 	}
 
-  function print() {
-    printImage(previewRef.current, height, width, () => {
-			toast.info('Generating print preview');
-      router.push('/print');
-		}, true);
-  }
+	function print() {
+		printImage(
+			previewRef.current,
+			height,
+			width,
+			() => {
+				toast.info('Generating print preview');
+				router.push('/print');
+			},
+			true
+		);
+	}
 
 	function downloadResult() {
 		exportAsImage(previewRef.current, 'image', pixelDensityDL, () =>
@@ -454,12 +458,12 @@ const Home: NextPage = () => {
 		);
 	}
 
-  let savedTheme = 'lofi';
-  
+	let savedTheme = 'lofi';
+
 	useEffect(() => {
-    // savedTheme = 
-    // setTheme(savedTheme);
-    
+		// savedTheme =
+		// setTheme(savedTheme);
+
 		function detectKeys(event: any) {
 			if ((event.ctrlKey || event.metaKey) && event.keyCode == 83) {
 				event.preventDefault();
@@ -497,47 +501,54 @@ const Home: NextPage = () => {
 		replaceBtnRef.current?.focus();
 	}, [confirmModal]);
 
-  // state dependent variable
+	// state dependent variable
 	const activeLayoutIndex =
 		layouts.findIndex((x) => x.name == selectedLayout) || 0;
 
 	useEffect(() => {
 		if (selectedLayout === '') {
-      
-      setData((prevState: any) => {
-        const newData = { ...prevState };
-        newData.selectedLayout = layouts[0].name || '';
-        return newData;
-      });
-      return;
-    
-    };
+			setData((prevState: any) => {
+				const newData = { ...prevState };
+				newData.selectedLayout = layouts[0].name || '';
+				return newData;
+			});
+			return;
+		}
 
-    // changes the aspect ratio I guess
+		// changes the aspect ratio I guess
 		const h = layouts[activeLayoutIndex].aspectRatio[0];
 		const w = layouts[activeLayoutIndex].aspectRatio[1];
 		if (imgRef.current) {
-      setData((prevState: any) => {
-        const newData = { ...prevState };
-        newData.crop = undefined;
-        newData.aspect = h / w;
-        return newData;
-      });
+			setData((prevState: any) => {
+				const newData = { ...prevState };
+				// newData.crop = undefined;
+				// newData.aspect = h / w;
+				if (h / w !== prevState.aspect) {
+					newData.aspect = h / w;
+					newData.crop = undefined;
+					newData.imagePreviewSrc = '';
+					newData.imgSrc = '';
+				}
+				return newData;
+			});
 			const _imgSrc = imgSrc;
-			removeImage();
+			// if ((h / w) !== prevState.aspect) {
+			//   removeImage();
+
+			// }
 			window.setTimeout(() => {
-        setData((prevState: any) => {
-          const newData = { ...prevState };
-          newData.imgSrc = _imgSrc;
-          return newData;
-        });
+				setData((prevState: any) => {
+					const newData = { ...prevState };
+					newData.imgSrc = _imgSrc;
+					return newData;
+				});
 			}, 100);
 		} else {
-      setData((prevState: any) => {
-        const newData = { ...prevState };
-        newData.aspect = h / w;
-        return newData;
-      });
+			setData((prevState: any) => {
+				const newData = { ...prevState };
+				newData.aspect = h / w;
+				return newData;
+			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeLayoutIndex, selectedLayout]);
@@ -546,23 +557,23 @@ const Home: NextPage = () => {
 		setData((prevState: any) => {
 			const newData = { ...prevState };
 			newData.imagePreviewSrc = '';
-      newData.imgSrc = '';
+			newData.imgSrc = '';
 			return newData;
 		});
 	}
 
-
-
-
 	return (
-		<div className="flex flex-col bg-base-100 h-screen" data-theme={data?.theme || 'lofi'}>
+		<div
+			className="flex flex-col bg-base-100 h-screen"
+			data-theme={data?.theme || 'lofi'}
+		>
 			<ToastContainer
 				hideProgressBar
 				theme="dark"
 				autoClose={1500}
 				position="bottom-right"
 			/>
-			<Meta/>
+			<Meta />
 			<AppHeader print={print} />
 
 			<section className="relative flex flex-1 p-8 gap-10 bg-base-100 overflow-auto">
@@ -597,13 +608,13 @@ const Home: NextPage = () => {
 						Preview and Save
 					</h2>
 
-          <button
-							className="btn btn-primary gap-2 w-[415px]"
-							onClick={saveImageLocally}
-						>
-							Save to stash
-							<Icon.Save />
-          </button>
+					<button
+						className="btn btn-primary gap-2 w-[415px]"
+						onClick={saveImageLocally}
+					>
+						Save to stash
+						<Icon.Save />
+					</button>
 					{/* PREVIEW */}
 					<div className="inline-flex">
 						<div className="flex flex-col">
@@ -623,7 +634,7 @@ const Home: NextPage = () => {
 						</div>
 					</div>
 
-          <div className="flex gap-4 mt-4 flex-wrap">
+					<div className="flex gap-4 mt-4 flex-wrap">
 						<button
 							className="btn btn-primary gap-2"
 							onClick={downloadResult}
@@ -657,10 +668,8 @@ const Home: NextPage = () => {
 							selectedLayout={selectedLayout}
 						/>
 					</div>
-				
-				
 				</div>
-        <Adjustments/>
+				<Adjustments />
 			</section>
 			{/* modals */}
 			{confirmModal && (
