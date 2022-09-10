@@ -8,7 +8,7 @@ import useImageDimensions from '../hooks/useImageDimensions';
 import { useRouter } from 'next/router';
 import classNames from 'classnames';
 import Image from 'next/image';
-import { Icons } from 'react-toastify';
+import { Icons, ToastContainer, toast } from 'react-toastify';
 
 const PrintPreview: NextPage = () => {
 	const { data } = useImageContext();
@@ -58,10 +58,17 @@ const PrintPreview: NextPage = () => {
   }
 
   const removeImage = (index: number) => {
-    const prevState = [...images];
-    prevState.splice(index, 1);
-    setImages(prevState);
-    localStorage.setItem('images', JSON.stringify(prevState));
+ 
+    if (confirm("Do you want to delete this image in stash?") == true) {
+      const prevState = [...images];
+      prevState.splice(index, 1);
+      setImages(prevState);
+      localStorage.setItem('images', JSON.stringify(prevState));
+      toast.success('Image removed from stash!')
+  } 
+  
+
+
   }
 
   const removeTemp = () => {
@@ -126,6 +133,12 @@ const PrintPreview: NextPage = () => {
 			data-theme={data?.theme || 'lofi'}
 			className="flex flex-col h-screen max-h-screen"
 		>
+      		<ToastContainer
+				hideProgressBar
+				theme="dark"
+				autoClose={1500}
+				position="bottom-right"
+			/>
       {
         isClipped && (
           <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-10 w-[500px] alert alert-warning shadow-lg">
