@@ -8,7 +8,8 @@ import useImageDimensions from '../hooks/useImageDimensions';
 import { useRouter } from 'next/router';
 import classNames from 'classnames';
 import Image from 'next/image';
-import { Icons, ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PrintPreview: NextPage = () => {
 	const { data } = useImageContext();
