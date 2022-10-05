@@ -29,12 +29,12 @@ export default function Adjustments() {
 					</a>
 				</div>
 			<div className="flex justify-between items-center mb-4">
-				<h2 className="text-lg font-semibold px-6">
+				<h2 className="text-lg font-semibold px-6  2xl:px-0">
 					<span className="text-primary font-bold">03</span>{' '}
 					Adjustments
 				</h2>
 				<button
-					className="btn btn-xs btn-ghost mr-6"
+					className="btn btn-xs btn-ghost mr-6  2xl:mr-0"
 					onClick={() => {
 						setData((prevState: any) => {
 							const newData = { ...prevState };
