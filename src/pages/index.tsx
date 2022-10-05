@@ -228,7 +228,16 @@ const Home: NextPage = () => {
 				{/* Image and Rotate slider */}
 				{Boolean(imgSrc) && (
 					<div className="flex flex-col items-center">
-						<div className="border-accent border-2 bg-checkered mb-4">
+						<div className="relative border-accent border-2 bg-checkered mb-4">
+              {
+                loading && (
+                  <div className="absolute inset-0 bg-primary/70 z-10 flex items-center justify-center">
+        
+                  <h1 className='text-primary-content text-xl text-center'>    <Icon.Loader size={60} className='animate-spin mx-auto'/> <br /> Removing background... Please wait</h1>
+                </div>
+                )
+              }
+        
 							{/* update: {forceUpdate} */}
 							<ReactCrop
 								// key={forceUpdate}
@@ -688,6 +697,7 @@ const Home: NextPage = () => {
 			/>
 			<Meta />
 			<AppHeader print={print} />
+ 
 
 			<section className="relative flex flex-1 p-8 gap-10 bg-base-100 overflow-auto">
 				<LayoutSelector />

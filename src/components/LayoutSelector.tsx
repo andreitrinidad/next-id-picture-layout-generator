@@ -23,7 +23,7 @@ export const LayoutSelector: React.FC = () => {
 		<div className="
     group
       border-r-2 min-w-[300px] p-6
-      h-full bg-base-100 z-10 shadow-md
+      h-full bg-base-100 z-20 shadow-md
       hover:translate-x-0
       hover:shadow-2xl hover:shadow-black
       fixed top-[64px] left-0 -translate-x-[290px] 
