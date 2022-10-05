@@ -31,6 +31,7 @@ import { useRouter } from 'next/router';
 import useImageDimensions from '../hooks/useImageDimensions';
 import Adjustments from '../components/Adjustments';
 import Meta from '../components/Meta';
+import axios from 'axios';
 
 function centerAspectCrop(
 	mediaWidth: number,
@@ -57,19 +58,16 @@ const Home: NextPage = () => {
 	const imgRef = useRef<HTMLImageElement>(null);
 	const reactCropRef = useRef(null);
 	const router = useRouter();
-	// const [scale, setScale] = useState(1);
-	// const [rotate, setRotate] = useState(0);
+	const apiRef = useRef<HTMLInputElement>(null);
 	const [pixelDensityCopy, setPixelDensityCopy] = useState(220);
 	const [pixelDensityDL, setPixelDensityDL] = useState(220);
+	const [loading, setLoading] = useState(false);
+	const [removeBGAPI, setRemoveBGAPI] = useState(null);
 	const previewRef = useRef<HTMLDivElement>(null);
 	const replaceBtnRef = useRef<HTMLButtonElement>(null);
-	const [theme, setTheme] = useState('lofi');
 	const [confirmModal, setConfirmModal] = useState(false);
-	// const [selectedLayout, setSelectedLayout] = useState(layouts[0].name);
-	// image modifcation related states
 	const { height, width } = useImageDimensions();
 	const { data, setData } = useImageContext();
-	// const { imagePreviewSrc = '' } = data;
 	const imagePreviewSrc = data?.imagePreviewSrc;
 	const selectedLayout = data?.selectedLayout;
 	const imgSrc = data?.imgSrc;
@@ -78,9 +76,7 @@ const Home: NextPage = () => {
 	const scale = data?.scale;
 	const rotate = data?.rotate;
 	const aspect = data?.aspect;
-
-	// const bgColor = data?.bgColor;
-	// const borderColor = data?.borderColor;
+	const api = data?.api;
 
 	function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 		if (e.target.files && e.target.files.length > 0) {
@@ -213,6 +209,18 @@ const Home: NextPage = () => {
 		setCropAndAspect();
 	}
 
+	function setApiLink() {
+		const apiLink = apiRef.current as any;
+		localStorage.setItem('bg-remove-api', apiLink.value);
+		setData((prevState: any) => {
+			const newData = { ...prevState };
+			newData.api = apiLink.value;
+			return newData;
+		});
+    toast.success('BG Remover link now set.');
+    router.back();
+	}
+
 	const renderControls = () => {
 		if (!imgSrc) return null;
 		return (
@@ -220,7 +228,7 @@ const Home: NextPage = () => {
 				{/* Image and Rotate slider */}
 				{Boolean(imgSrc) && (
 					<div className="flex flex-col items-center">
-						<div className="border-accent border-2 bg-checkered">
+						<div className="border-accent border-2 bg-checkered mb-4">
 							{/* update: {forceUpdate} */}
 							<ReactCrop
 								// key={forceUpdate}
@@ -255,7 +263,58 @@ const Home: NextPage = () => {
 								/>
 							</ReactCrop>
 						</div>
+						<div className="btn-group w-full">
+							<button
+								className="btn btn-primary flex-1 mb-4 gap-2"
+								onClick={removeBG}
+								disabled={loading || api === ''}
+							>
+								<Icon.Zap />
+								{loading
+									? 'Removing Background...'
+									: 'Remove Background'}
+							</button>
 
+							<a
+								className="btn btn-primary mb-4 gap-2 border-l-white"
+								// onClick={removeBG}
+								// disabled={loading}
+								href="#api-modal"
+							>
+								<Icon.Settings size={15} />
+							</a>
+						</div>
+						<div className="modal" id="api-modal">
+							<div className="modal-box">
+								<h3 className="font-bold text-lg">
+									BG Remover API settings
+								</h3>
+								<p className="py-4">
+									Input the link to the API
+								</p>
+								<input
+									type="text"
+									placeholder="https://"
+									defaultValue={api}
+									ref={apiRef}
+									className="input input-bordered w-full "
+								/>
+								<div className="modal-action">
+									<a
+										className="btn btn-link btn-warning"
+										href="#"
+									>
+										Cancel
+									</a>
+									<button
+										onClick={setApiLink}
+										className="btn"
+									>
+										SET API LINK
+									</button>
+								</div>
+							</div>
+						</div>
 						<div className="control w-full mt-4 px-10">
 							<div className="flex justify-between text-xs">
 								<span className="-translate-x-2">-180</span>
@@ -458,6 +517,45 @@ const Home: NextPage = () => {
 		);
 	}
 
+	async function removeBG() {
+		setLoading(true);
+
+		const blob = await fetch(imgSrc || '').then((res) => res.blob());
+		const formData = new FormData();
+		formData.append('image', blob);
+		formData.append('alpha_matting_background', '0');
+		formData.append('alpha_matting_foreground', '15');
+		formData.append('method', 'u2net_human_seg');
+
+		try {
+			const res = await axios.post(
+				api || '',
+				formData,
+				{
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
+				}
+			);
+
+			console.log('res.data', res.data);
+			setData((prevState: any) => {
+				const newData = { ...prevState };
+				// newData.imagePreviewSrc = 'data:image/png;base64,' + res.data.result;
+				newData.imgSrc = 'data:image/png;base64,' + res.data.result;
+				newData.crop = undefined;
+				return newData;
+			});
+			toast.success('Background removed!');
+		} catch (error) {
+			toast.error('Something went wrong. Cannot reach BG Remover server');
+
+			console.log('error :>> ', error);
+		} finally {
+			setLoading(false);
+		}
+	}
+
 	let savedTheme = 'lofi';
 
 	useEffect(() => {
@@ -500,6 +598,21 @@ const Home: NextPage = () => {
 	useEffect(() => {
 		replaceBtnRef.current?.focus();
 	}, [confirmModal]);
+
+	useEffect(() => {
+		const theme = localStorage.getItem('bg-remove-api');
+		// if (typeof window !== 'undefined') {
+
+		if (!!theme) {
+			setData((prevState: any) => {
+				const newData = { ...prevState };
+				newData.api = theme;
+				return newData;
+			});
+		}
+
+		// }
+	}, [setData]);
 
 	// state dependent variable
 	const activeLayoutIndex =
@@ -602,7 +715,7 @@ const Home: NextPage = () => {
 
 					{renderControls()}
 				</div>
-				<div className="flex-1 min-w-[450px]">
+				<div className="flex-1 min-w-[450px] flex flex-col">
 					<h2 className="text-lg font-semibold mb-4">
 						<span className="text-primary font-bold">02</span>{' '}
 						Preview and Save

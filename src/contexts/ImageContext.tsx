@@ -25,6 +25,7 @@ interface IDataProps {
   // global
 	theme: string;
 	selectedLayout: string;
+  api: string;
 }
 
 interface IImageContextProps {
@@ -41,6 +42,7 @@ const ImageContextProvider = (props: any) => {
     imgSrc: '',
     crop: undefined,
     completedCrop: undefined,
+    api: '',
     scale: 1,
     rotate: 0,
     aspect: 1 / 1,

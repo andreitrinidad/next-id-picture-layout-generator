@@ -40,6 +40,7 @@ const LayoutPreview = React.forwardRef<HTMLDivElement, ILayoutPreviewProps>(
 		const renderColumn = (col: { height: number, width: number}, i: number) => {
 			return (
 				<td
+          key={i}
           colSpan={col.width}
 					className="relative"
 					style={{
